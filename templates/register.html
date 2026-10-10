@@ -1,0 +1,21 @@
+{% extends "layout.html" %} {% block title %}Create account{%
+endblock %} {% block content %}
+  <h2>
+   Create account
+  </h2>
+    
+  <form action="/register" method="post">
+    <div>
+      Username
+      <input type="text" name="username" />
+    </div>
+    <div>
+      Password
+      <input type="password" name="password" />
+    </div>
+    <input type="submit" value="Create account" />
+  </form>
+
+    <a href="/">Go back</a>
+ 
+{% endblock %}

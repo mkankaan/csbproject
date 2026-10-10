@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>{% block title %}{% endblock %}</title>
+    <link rel="stylesheet" href="/static/main.css" />
+  </head>
+  <body>
+        <header>
+            <h1>Chat app</h1>
+            <div>
+                {% if session.username %}
+                <p>
+                Logged in as 
+                <a href="/user/{{ session.user_id }}"
+                  >{{ session.username }}</a
+                >
+                </p>
+                {% else %}
+                <a href="/login">Log in</a>
+                {% endif %}
+            </div>
+        </header>
+        <div class="content">{% block content %}{% endblock %}</div>
+    </div>
+  </body>
+</html>
