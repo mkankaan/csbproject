@@ -20,7 +20,7 @@
                     {% if room.owner == session.user_id %}
                         You
                     {% else %}
-                        {{ room.owner }}
+                        {{ room.owner_username }}
                     {% endif %}
                 </li>
             {% endfor%}

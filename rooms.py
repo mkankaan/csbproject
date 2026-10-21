@@ -11,7 +11,8 @@ def create_room(room_name, user_id):
 
 
 def get_user_rooms(user_id):
-    sql = """SELECT rooms.id, rooms.owner, rooms.name, members.joined as joined
+    sql = """SELECT rooms.id, rooms.owner, rooms.name, members.joined as joined,
+            (SELECT username FROM users WHERE id = rooms.owner) AS owner_username
             FROM rooms
             LEFT JOIN users ON rooms.owner = users.id
             LEFT JOIN members ON rooms.id = members.room_id

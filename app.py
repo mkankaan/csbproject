@@ -95,6 +95,7 @@ def user_page(user_id):
         room_id = room["id"]
         chat_rooms[room_id] = { "id": room_id,
                                "owner": room["owner"],
+                                "owner_username": room["owner_username"],
                                "name": room["name"],
                                "joined": room["joined"],
                                "members": []}

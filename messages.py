@@ -10,7 +10,7 @@ def create_message(user_id, room_id, content):
 
 
 def get_messages_by_room(room_id):
-    sql = """SELECT users.username, messages.content, messages.time
+    sql = """SELECT users.username, messages.user_id, messages.content, messages.time
             FROM messages
             LEFT JOIN users on users.id = messages.user_id
             """

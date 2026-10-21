@@ -25,13 +25,19 @@
     </form>
     {% endif %}
 
-    {% for message in messages %}
-    <div class="message">
-        <span class="username">{{ message.username }}</span>
-        <span class="date">{{ message.time }}</span>
-        <p>{{ message.content }}</p>
+    <div class="message-scrollbox">
+        {% for message in messages %}
+            {% if message.user_id == session.user_id %}
+                <div class="message message-sender">
+            {% else %}
+                <div class="message">
+            {% endif %}
+            <span class="username">{{ message.username }}</span>
+            <span class="date">{{ message.time }}</span>
+            <p>{{ message.content }}</p>
+        </div>
+        {% endfor %}
     </div>
-    {% endfor %}
 
     <form action="/new_message" method="post">
         <!-- csrf -->

@@ -64,6 +64,12 @@ form.vertical-form {
   border: 1px solid #000000;
 }
 
+.message-scrollbox {
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
+}
+
 .message {
     background-color: rgb(230, 230, 230);
     padding: .5rem;
@@ -72,8 +78,8 @@ form.vertical-form {
     max-width: 70%;
 }
 
-.message + .message {
-    margin-top: 1rem;
+.message-sender {
+    align-self: flex-end;
 }
 
 .username {
