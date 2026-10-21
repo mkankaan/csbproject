@@ -2,26 +2,33 @@
 <section>
     <h2>My profile</h2>
 
-    {{ user.username }}
-    <a href="/edit_profile">Edit profile</a>
+    <p>{{ user.username }}</p>
+    <p>User id: {{ user.id }}</p>
+    </br>
+    <a href="/edit_profile"><button>Edit profile</button></a>
 </section>
 
 <section>
     <h2>My chat rooms</h2>
 
-    <a href="/new_room">New chat room</a>
+    <a href="/new_room"><button>New chat room</button></a>
 
     {% if chat_rooms %}
         <ul>
             {% for room in chat_rooms.values() %}
-                <li>
+                <li class="room-summary">
+                    <div>
                     <a href="/room/{{ room.id }}">{{ room.name }}</a>
+                    <p>{{ room.members | join(', ') }}</p>
+                    </div>
+                    <div>
                     Owner: 
                     {% if room.owner == session.user_id %}
                         You
                     {% else %}
                         {{ room.owner_username }}
                     {% endif %}
+                    </div>
                 </li>
             {% endfor%}
         </ul>

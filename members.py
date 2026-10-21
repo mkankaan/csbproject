@@ -12,3 +12,4 @@ def get_by_room(room_id):
             LEFT JOIN users ON users.id = members.user_id
             WHERE room_id = ?"""
     return db.query(sql, [room_id])
+

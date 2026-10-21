@@ -102,7 +102,9 @@ def user_page(user_id):
         room_members = list(members.get_by_room(room_id))
 
         for member in room_members:
-            chat_rooms[room_id]["members"].append(member["username"])    
+            chat_rooms[room_id]["members"].append(member["username"])   
+        print(chat_rooms)
+
 
     return render_template("user.html", user=user, chat_rooms = chat_rooms)
 

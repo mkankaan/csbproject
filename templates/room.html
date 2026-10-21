@@ -1,31 +1,54 @@
-{% extends "layout.html" %} {% block title %}{{ room.name }}{% endblock %} {% block content %}
-<div class="room-container">
-    <a href="/user/{{ user.id }}">Go back</a>
-    <h2>{{ room.name }}</h2>
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>{{ room.name }}</title>
+    <link rel="stylesheet" href="/static/main.css" />
+  </head>
+  <body class="chatroom-container">
+        <header>
+            <h1><a href="/">Chat app</a></h1>
+            <div class="header-links">
+                {% if session.username %}
+                <span>Logged in as 
+                <a href="/user/{{ session.user_id }}">{{ session.username }}</a></span>
+                <span><a href="/logout">Log out</a></span>
+                {% else %}
+                <a href="/login">Log in</a> <a href="/register">Register</a>
+                {% endif %}
+            </div>
+        </header>
 
-    <p>{{ members|join(', ') }}</p>
+        <div class="message-container">
+            <div>
+            <a href="/user/{{ user.id }}">Go back</a>
+            <h2>{{ room.name }}</h2>
 
-    {% if session.user_id == room.owner %}
-    <form class="add-member" action="/add_member" method="post">
-        <!-- csrf -->
-        <div>Add members</div>
-        <div>
-        <input
-            type="text"
-            id="username"
-            name="username"
-        />
-        <input
-        type="hidden"
-        name="room_id"
-        value="{{ room.id }}"
-      />
-    <input type="submit" value="Add" />
-    </div>
-    </form>
-    {% endif %}
+            <div class="user-list">
+            <p>{{ members | join(', ') }}</p>
+            {% if session.user_id == room.owner %}
+            <form class="add-member" action="/add_member" method="post">
+                <!-- csrf -->
+                <div style="display: grid; align-content: center;">Add members</div>
+                <div>
+                <input
+                    type="text"
+                    id="username"
+                    name="username"
+                />
+                <input
+                type="hidden"
+                name="room_id"
+                value="{{ room.id }}"
+                />
+                <input type="submit" value="Add" />
+                </div>
+                </form>
+                {% endif %}
+            </div>
 
-    <div class="message-scrollbox">
+            </div>
+
+        <div class="message-scrollbox">
         {% for message in messages %}
             {% if message.user_id == session.user_id %}
                 <div class="message message-sender">
@@ -35,24 +58,36 @@
             <span class="username">{{ message.username }}</span>
             <span class="date">{{ message.time }}</span>
             <p>{{ message.content }}</p>
+            </div>
+            {% endfor %}
+            </div>
         </div>
-        {% endfor %}
+
+    <footer>
+        <div>
+            <form action="/new_message" method="post">
+            <!-- csrf -->
+            <input
+                type="text"
+                id="content"
+                name="content"
+            />
+            <input
+            type="hidden"
+            name="room_id"
+            value="{{ room.id }}"
+            />
+            <input type="submit" value="Send" />
+            </form>
+            <div class="footer-buttons">
+            {% if room.owner == session.user_id %}
+                <button>Delete room</button>
+            {% else %}
+                <button>Leave room</button>
+            {% endif %}
+        </div>
+        </div>
+    </footer>
     </div>
-
-    <form action="/new_message" method="post">
-        <!-- csrf -->
-        <input
-            type="text"
-            id="content"
-            name="content"
-        />
-        <input
-        type="hidden"
-        name="room_id"
-        value="{{ room.id }}"
-      />
-        <input type="submit" value="Send" />
-    </form>
-</div>
-
-{% endblock %}
+  </body>
+</html>

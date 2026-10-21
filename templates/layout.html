@@ -5,20 +5,15 @@
     <link rel="stylesheet" href="/static/main.css" />
   </head>
   <body>
-        <header>
-            <h1>Chat app</h1>
-            <div>
+         <header>
+            <h1><a href="/">Chat app</a></h1>
+            <div class="header-links">
                 {% if session.username %}
-                <p>
-                Logged in as 
-                <a href="/user/{{ session.user_id }}"
-                  >{{ session.username }}</a
-                >
-                </p>
-                <a href="/logout">Log out</a>
+                <span>Logged in as 
+                <a href="/user/{{ session.user_id }}">{{ session.username }}</a></span>
+                <span><a href="/logout">Log out</a></span>
                 {% else %}
-                <a href="/login">Log in</a>
-                <a href="/register">Register</a>
+                <a href="/login">Log in</a> <a href="/register">Register</a>
                 {% endif %}
             </div>
         </header>
