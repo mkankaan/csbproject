@@ -13,3 +13,7 @@ def get_by_room(room_id):
             WHERE room_id = ?"""
     return db.query(sql, [room_id])
 
+
+def remove_member(user_id, room_id):
+    sql = f"DELETE FROM members WHERE user_id = {user_id} AND room_id = {room_id}"
+    db.execute(sql)

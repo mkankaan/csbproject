@@ -48,7 +48,8 @@
 
             </div>
 
-        <div class="message-scrollbox">
+        {% if messages %}
+            <div class="message-scrollbox">
         {% for message in messages %}
             {% if message.user_id == session.user_id %}
                 <div class="message message-sender">
@@ -62,6 +63,9 @@
             {% endfor %}
             </div>
         </div>
+        {% else %}
+        <p style="text-align: center;">Start messaging</p>
+        {% endif %}
 
     <footer>
         <div>
@@ -83,7 +87,14 @@
             {% if room.owner == session.user_id %}
                 <button>Delete room</button>
             {% else %}
-                <button>Leave room</button>
+                <form action="/leave_room" method="post">
+                <input
+                type="hidden"
+                name="room_id"
+                value="{{ room.id }}"
+                />
+                <input type="submit" name="continue" value="Leave room" />
+                </form>
             {% endif %}
         </div>
         </div>

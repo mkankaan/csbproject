@@ -103,8 +103,6 @@ def user_page(user_id):
 
         for member in room_members:
             chat_rooms[room_id]["members"].append(member["username"])   
-        print(chat_rooms)
-
 
     return render_template("user.html", user=user, chat_rooms = chat_rooms)
 
@@ -166,6 +164,18 @@ def add_member():
             members.add_member(new_member_id, room_id)
 
         return redirect("/room/" + str(room_id))
+
+
+@app.route("/leave_room", methods=["POST"])
+def leave_room():
+    if request.method == "POST":
+        room_id = request.form["room_id"]
+        user_id = session["user_id"]
+        print("remove user", user_id, "from room", room_id)
+        members.remove_member(user_id, room_id)
+        print("left room")
+        return redirect("/user/" + str(user_id))
+
 
 
 
