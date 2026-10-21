@@ -206,6 +206,25 @@ def change_username():
         return render_template("edit_profile.html", user=user, username_error="Username already taken", password_error="")
 
 
+@app.route("/change_password", methods=["POST"])
+def change_password():
+    if request.method == "POST":
+        user_id = session["user_id"]
+        user = users.get_user(user_id)
+        new_password = request.form["new_password"]
+        new_password2 = request.form["new_password2"]
+        old_password = request.form["old_password"]
+
+    if new_password != new_password2:
+        return render_template("edit_profile.html", user=user, username_error="", password_error="Passwords don't match")
+
+    if new_password == old_password:
+        return render_template("edit_profile.html", user=user, username_error="", password_error="New password can't be the same as old password")
+
+    # validate new password
+
+    users.change_password(user_id, new_password)
+    return render_template("edit_profile.html", user=user, username_error="", password_error="")
 
 
 

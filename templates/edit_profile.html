@@ -11,13 +11,13 @@
 </section>
 
 <section>
-    <form class="edit-profile" action="/edit_profile" method="post">
+    <form class="edit-profile" action="/change_password" method="post">
     <label for="new_username">New password</label>
     <input type="text" name="new_password" />
     <label for="new_username">New password again</label>
     <input type="text" name="new_password2" />
     <label for="new_username">Old password</label>
-    <input type="text" name="old_password" />
+    <input type="text" name="old_password" required />
     <input type="submit" value="Change password" />
   </form> 
     <span>{{ password_error }}</span>

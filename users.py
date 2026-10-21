@@ -7,7 +7,7 @@ def create_user(username, password):
 
 
 def get_user(user_id):
-    sql = "SELECT id, username FROM users WHERE id = ?"
+    sql = "SELECT id, username, password FROM users WHERE id = ?"
     result = db.query(sql, [user_id])
     return result[0] if result else None
 
@@ -39,3 +39,8 @@ def check_password_matches(username, password):
 def change_username(user_id, new_username):
     sql = f"UPDATE users SET username = '{new_username}' WHERE id = '{user_id}'"
     db.execute(sql, [new_username, user_id])
+
+
+def change_password(user_id, new_password):
+    sql = f"UPDATE users SET password = '{new_password}' WHERE id = '{user_id}'"
+    db.execute(sql, [new_password, user_id])
