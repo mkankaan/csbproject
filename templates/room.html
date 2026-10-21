@@ -85,7 +85,14 @@
             </form>
             <div class="footer-buttons">
             {% if room.owner == session.user_id %}
-                <button>Delete room</button>
+                <form action="/delete_room/{{ room.id }}" method="post">
+                <input
+                type="hidden"
+                name="room_id"
+                value="{{ room.id }}"
+                />
+                <input type="submit" name="continue" value="Delete room" />
+                </form>
             {% else %}
                 <form action="/leave_room" method="post">
                 <input

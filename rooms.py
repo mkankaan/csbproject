@@ -1,5 +1,6 @@
 import db
 import members
+import messages
 
 
 def create_room(room_name, user_id):
@@ -35,3 +36,10 @@ def last_room_by_user(user_id):
              LIMIT 1"""
     result = db.query(sql, [user_id])
     return result[0][0] if result else None
+
+
+def delete_room(room_id):
+    messages.delete_by_room(room_id)
+    members.delete_by_room(room_id)
+    sql = f"DELETE FROM rooms WHERE id = '{room_id}'"
+    db.execute(sql)

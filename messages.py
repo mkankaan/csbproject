@@ -18,3 +18,8 @@ def get_messages_by_room(room_id):
             ORDER BY messages.time DESC
             """
     return db.query(sql, [room_id])
+
+
+def delete_by_room(room_id):
+    sql = f"DELETE FROM messages WHERE room_id = '{room_id}'"
+    db.execute(sql)

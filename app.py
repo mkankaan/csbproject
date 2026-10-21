@@ -70,7 +70,7 @@ def login():
             return redirect("/")
         else:
             print("wrong username or password")
-            return render_template("login.html")
+            return render_template("login.html", error="Wrong username or password")
 
 
 @app.route("/logout")
@@ -227,6 +227,14 @@ def change_password():
     return render_template("edit_profile.html", user=user, username_error="", password_error="")
 
 
+@app.route("/delete_room/<int:room_id>", methods=["POST"])
+def delete_room(room_id):
+    if request.method == "POST":
+        room_id = request.form["room_id"]
+        user_id = session["user_id"]
 
+        # check that user is owner
 
+        rooms.delete_room(room_id)
+        return redirect("/user/" + str(user_id))
 
