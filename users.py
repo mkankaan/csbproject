@@ -34,3 +34,8 @@ def check_password_matches(username, password):
             return user_id
 
     return None
+
+
+def change_username(user_id, new_username):
+    sql = f"UPDATE users SET username = '{new_username}' WHERE id = '{user_id}'"
+    db.execute(sql, [new_username, user_id])

@@ -1,0 +1,30 @@
+{% extends "layout.html" %} {% block title %}My profile{% endblock %} {% block content %}
+<section>
+    <h2>Edit profile</h2>
+
+    <form class="edit-profile change-username" action="/change_username" method="post">
+    <label for="new_username">Username</label>
+    <input type="text" name="new_username" value="{{ user.username }}" />
+    <input type="submit" value="Save" />
+    </form>
+    <span>{{ username_error }}</span>
+</section>
+
+<section>
+    <form class="edit-profile" action="/edit_profile" method="post">
+    <label for="new_username">New password</label>
+    <input type="text" name="new_password" />
+    <label for="new_username">New password again</label>
+    <input type="text" name="new_password2" />
+    <label for="new_username">Old password</label>
+    <input type="text" name="old_password" />
+    <input type="submit" value="Change password" />
+  </form> 
+    <span>{{ password_error }}</span>
+</section>
+
+<a href="/user/{{ user.id }}">Go back</a>
+
+</section>
+
+{% endblock %}

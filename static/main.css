@@ -48,6 +48,14 @@ form {
     grid-template-columns: auto auto;
 }
 
+form.edit-profile label {
+    min-width: 18ch;
+}
+
+form.change-username {
+    grid-template-columns: auto auto auto;
+}
+
 form.add-member {
     display: grid;
     gap: 1rem;

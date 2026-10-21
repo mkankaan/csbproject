@@ -177,5 +177,37 @@ def leave_room():
         return redirect("/user/" + str(user_id))
 
 
+@app.route("/edit_profile/<int:user_id>", methods=["GET"])
+def edit_profile(user_id):
+    if request.method == "GET":
+        user = users.get_user(user_id)
+        
+        if not user:
+            abort(404)
+
+        return render_template("edit_profile.html", user=user, username_error="", password_error="")
+
+
+@app.route("/change_username", methods=["POST"])
+def change_username():
+    if request.method == "POST":
+        user_id = session["user_id"]
+        user = users.get_user(user_id)
+        new_username = request.form["new_username"]
+
+    try:
+        users.change_username(user_id, new_username)
+        user = users.get_user(user_id)
+        session["username"] = new_username
+        return render_template("edit_profile.html", user=user, username_error="", password_error="")
+    
+    except sqlite3.IntegrityError:
+        print("username taken")
+        return render_template("edit_profile.html", user=user, username_error="Username already taken", password_error="")
+
+
+
+
+
 
 
