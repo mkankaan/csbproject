@@ -1,0 +1,20 @@
+{% extends "layout.html" %} {% block title %}Create account{%
+endblock %} {% block content %}
+    
+  <div class="center">
+    <h2>New chat room</h2>
+    <form class="vertical-form" action="/new_room" method="post">
+      <!-- csrf -->
+        <p>Give your chat room a name</p>
+        <input
+            type="text"
+            id="room_name"
+            name="room_name"
+        />
+        <input type="submit" value="Create" />
+    </form>
+    <a href="/">Go back</a>
+  </div>
+
+ 
+{% endblock %}

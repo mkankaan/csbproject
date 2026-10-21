@@ -5,28 +5,24 @@ endblock %} {% block content %}
   </h2>
     
   <form action="/login" method="post">
-    <div>
     <label for="username">Username</label>
-        <input
-            type="text"
-            id="username"
-            name="username"
-        />
-    </div>
-    <div>
-        <label for="password">Password</label>
-        <input
-            type="password"
-            id="password"
-            name="password"
-        />
-    </div>
-    <div>
-        <input
-            type="submit"
-            value="Log in"
-        />
-    </div>
+    <input
+        type="text"
+        id="username"
+        name="username"
+    />
+    <label for="password">Password</label>
+    <input
+        type="password"
+        id="password"
+        name="password"
+    />
+    <input
+        type="submit"
+        value="Log in"
+    />
   </form>
+
+  <a href="/register">Create account</a>
  
 {% endblock %}

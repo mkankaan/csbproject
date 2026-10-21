@@ -3,18 +3,24 @@
     <h2>My profile</h2>
 
     {{ user.username }}
-    <a href="/change_password">Change password</a>
+    <a href="/edit_profile">Edit profile</a>
 </section>
 
 <section>
     <h2>My chat rooms</h2>
 
-    <a href="/create_room">New chat room</a>
+    <a href="/new_room">New chat room</a>
 
-    
+    {% if chat_rooms %}
+        <ul>
+            {% for room in chat_rooms.values() %}
+                <li><a href="/room/{{ room.id }}">{{ room.name }}</a></li>
+            {% endfor%}
+        </ul>
+    {% else %}
+        <p>No chat rooms yet</p>
+    {% endif %}
+
 </section>
-
-
-
 
 {% endblock %}

@@ -26,3 +26,36 @@ header {
     border: 1px solid #000000;
     padding: 1em;
 }
+
+form {
+    max-width: fit-content;
+    display: grid;
+    gap: .5rem 1rem;
+    grid-template-columns: auto auto;
+}
+
+.center {
+    margin-top: 20vh;
+    display: grid;
+    justify-items: center;
+    align-items: center;
+    gap: 2rem;
+}
+
+form.vertical-form {
+    display: grid;
+    align-content: center;
+    grid-template-columns: auto;
+}
+
+.message + .message {
+    margin-top: 1rem;
+}
+
+.username {
+    font-weight: bold;
+}
+
+.date {
+    font-style: italic;
+}

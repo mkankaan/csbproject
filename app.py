@@ -8,6 +8,8 @@ from flask import abort
 import sqlite3
 
 import users
+import rooms
+import messages
 
 app = Flask(__name__)
 app.secret_key = "1"
@@ -85,5 +87,60 @@ def user_page(user_id):
     if not user:
         abort(404)
 
-    return render_template("user.html", user=user)
+    user_rooms = rooms.get_user_rooms(user_id)
+    chat_rooms = {}
+
+    for room in user_rooms:
+        room_id = room["id"]
+        chat_rooms[room_id] = { "id": room_id,
+                               "name": room["name"],
+                               "joined": room["joined"],
+                               "members": []}
+        members = list(rooms.get_room_members(room_id))
+
+        for member in members:
+            chat_rooms[room_id]["members"].append(member["username"])    
+
+    return render_template("user.html", user=user, chat_rooms = chat_rooms)
+
+
+@app.route("/new_room", methods=["GET", "POST"])
+def new_room():
+    if request.method == "GET":
+        return render_template("new_room.html")
+
+    if request.method == "POST":
+        room_name = request.form["room_name"]
+        user_id = session["user_id"]
+        print("create chat room", room_name, "user", user_id)
+
+        rooms.create_room(room_name, user_id)
+        return redirect("/user/" + str(session["user_id"]))
+
+
+@app.route("/room/<int:room_id>")
+def chat_room(room_id):
+    room = rooms.get_room(room_id)
+    user = users.get_user(session["user_id"])  
+
+    if not room:
+        abort(404)
+
+    room_messages = messages.get_messages_by_room(room_id)
+    print("msg:")
+    print(room_messages)
+
+    return render_template("room.html", room=room, user=user, messages=room_messages)
+
+
+@app.route("/new_message", methods=["POST"])
+def new_message():
+    if request.method == "POST":
+        room_id = request.form["room_id"]
+        content = request.form["content"]
+        user_id = session["user_id"]
+        messages.create_message(user_id, room_id, content)
+        return redirect("/room/" + str(room_id))
+
+
 

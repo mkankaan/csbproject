@@ -5,15 +5,11 @@ endblock %} {% block content %}
   </h2>
     
   <form action="/register" method="post">
-    <div>
-      Username
-      <input type="text" name="username" />
-    </div>
-    <div>
-      Password
-      <!-- <input type="password" name="password" /> -->
-      <input type="text" name="password" />
-    </div>
+    <label for="username">Username</label>
+    <input type="text" name="username" />
+    <label for="password">Password</label>
+    <!-- <input type="password" name="password" /> -->
+    <input type="text" name="password" />
     <input type="submit" value="Create account" />
   </form>
 
