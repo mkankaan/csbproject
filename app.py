@@ -10,6 +10,7 @@ import sqlite3
 import users
 import rooms
 import messages
+import members
 
 app = Flask(__name__)
 app.secret_key = "1"
@@ -93,12 +94,13 @@ def user_page(user_id):
     for room in user_rooms:
         room_id = room["id"]
         chat_rooms[room_id] = { "id": room_id,
+                               "owner": room["owner"],
                                "name": room["name"],
                                "joined": room["joined"],
                                "members": []}
-        members = list(rooms.get_room_members(room_id))
+        room_members = list(members.get_by_room(room_id))
 
-        for member in members:
+        for member in room_members:
             chat_rooms[room_id]["members"].append(member["username"])    
 
     return render_template("user.html", user=user, chat_rooms = chat_rooms)
@@ -127,10 +129,10 @@ def chat_room(room_id):
         abort(404)
 
     room_messages = messages.get_messages_by_room(room_id)
-    print("msg:")
-    print(room_messages)
+    room_members = members.get_by_room(room_id)
+    usernames=[member["username"] for member in room_members]
 
-    return render_template("room.html", room=room, user=user, messages=room_messages)
+    return render_template("room.html", room=room, user=user, messages=room_messages, members=usernames)
 
 
 @app.route("/new_message", methods=["POST"])
@@ -140,6 +142,26 @@ def new_message():
         content = request.form["content"]
         user_id = session["user_id"]
         messages.create_message(user_id, room_id, content)
+        return redirect("/room/" + str(room_id))
+
+
+@app.route("/add_member", methods=["POST"])
+def add_member():
+    if request.method == "POST":
+        # check that logged in user is owner
+        room_id = request.form["room_id"]
+        username = request.form["username"]
+        print("add member", username, "to room", room_id)
+
+        user = users.get_by_username(username)
+
+        if not user:
+            print("user doesn't exist")
+        else:
+            new_member_id = user["id"]
+            print("found", username, "id", new_member_id)
+            members.add_member(new_member_id, room_id)
+
         return redirect("/room/" + str(room_id))
 
 

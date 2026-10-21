@@ -12,6 +12,12 @@ def get_user(user_id):
     return result[0] if result else None
 
 
+def get_by_username(user_id):
+    sql = "SELECT id FROM users WHERE username = ?"
+    result = db.query(sql, [user_id])
+    return result[0] if result else None
+
+
 def get_all_users():
     sql = "SELECT username, password FROM users"
     return db.query(sql)

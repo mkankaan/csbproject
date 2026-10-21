@@ -34,6 +34,12 @@ form {
     grid-template-columns: auto auto;
 }
 
+form.add-member {
+    border: 1px solid red;
+    display: grid;
+    gap: 1rem;
+}
+
 .center {
     margin-top: 20vh;
     display: grid;
@@ -46,6 +52,24 @@ form.vertical-form {
     display: grid;
     align-content: center;
     grid-template-columns: auto;
+}
+
+.room-container {
+  position: absolute;
+  padding-top: 0;
+  margin-top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(95%, 60rem);
+  border: 1px solid #000000;
+}
+
+.message {
+    background-color: rgb(230, 230, 230);
+    padding: .5rem;
+    border-radius: .5rem;
+    width: fit-content;
+    max-width: 70%;
 }
 
 .message + .message {

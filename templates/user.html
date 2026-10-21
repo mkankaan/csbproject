@@ -14,7 +14,15 @@
     {% if chat_rooms %}
         <ul>
             {% for room in chat_rooms.values() %}
-                <li><a href="/room/{{ room.id }}">{{ room.name }}</a></li>
+                <li>
+                    <a href="/room/{{ room.id }}">{{ room.name }}</a>
+                    Owner: 
+                    {% if room.owner == session.user_id %}
+                        You
+                    {% else %}
+                        {{ room.owner }}
+                    {% endif %}
+                </li>
             {% endfor%}
         </ul>
     {% else %}

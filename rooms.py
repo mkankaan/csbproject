@@ -11,7 +11,7 @@ def create_room(room_name, user_id):
 
 
 def get_user_rooms(user_id):
-    sql = """SELECT rooms.id, rooms.name, members.joined as joined
+    sql = """SELECT rooms.id, rooms.owner, rooms.name, members.joined as joined
             FROM rooms
             LEFT JOIN users ON rooms.owner = users.id
             LEFT JOIN members ON rooms.id = members.room_id
@@ -20,17 +20,9 @@ def get_user_rooms(user_id):
 
 
 def get_room(room_id):
-    sql = "SELECT id, name FROM rooms WHERE id = ?"
+    sql = "SELECT id, name, owner FROM rooms WHERE id = ?"
     result = db.query(sql, [room_id])
     return result[0] if result else None
-
-
-def get_room_members(room_id):
-    sql = """SELECT members.user_id, users.username
-            FROM members
-            LEFT JOIN users ON users.id = members.user_id
-            WHERE room_id = ?"""
-    return db.query(sql, [room_id])
 
 
 # workaround for lastrowid which didn't seem to work with executescript

@@ -1,5 +1,29 @@
 {% extends "layout.html" %} {% block title %}{{ room.name }}{% endblock %} {% block content %}
+<div class="room-container">
+    <a href="/user/{{ user.id }}">Go back</a>
     <h2>{{ room.name }}</h2>
+
+    <p>{{ members|join(', ') }}</p>
+
+    {% if session.user_id == room.owner %}
+    <form class="add-member" action="/add_member" method="post">
+        <!-- csrf -->
+        <div>Add members</div>
+        <div>
+        <input
+            type="text"
+            id="username"
+            name="username"
+        />
+        <input
+        type="hidden"
+        name="room_id"
+        value="{{ room.id }}"
+      />
+    <input type="submit" value="Add" />
+    </div>
+    </form>
+    {% endif %}
 
     {% for message in messages %}
     <div class="message">
@@ -23,7 +47,6 @@
       />
         <input type="submit" value="Send" />
     </form>
-
-    <a href="/user/{{ user.id }}">Go back</a>
+</div>
 
 {% endblock %}
