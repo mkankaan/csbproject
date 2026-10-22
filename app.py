@@ -97,7 +97,6 @@ def user_page(user_id):
                                "owner": room["owner"],
                                 "owner_username": room["owner_username"],
                                "name": room["name"],
-                               "joined": room["joined"],
                                "members": []}
         room_members = list(members.get_by_room(room_id))
 
@@ -133,7 +132,7 @@ def chat_room(room_id):
     room_members = members.get_by_room(room_id)
     usernames=[member["username"] for member in room_members]
 
-    return render_template("room.html", room=room, user=user, messages=room_messages, members=usernames)
+    return render_template("room.html", room=room, user=user, messages=room_messages, members=usernames, error="")
 
 
 @app.route("/new_message", methods=["POST"])
@@ -157,11 +156,13 @@ def add_member():
         user = users.get_by_username(username)
 
         if not user:
-            print("user doesn't exist")
+            session["user_not_found_error"] = "User doesn't exist"
+            return redirect("/room/" + str(room_id))
         else:
             new_member_id = user["id"]
             print("found", username, "id", new_member_id)
             members.add_member(new_member_id, room_id)
+            del session["user_not_found_error"]
 
         return redirect("/room/" + str(room_id))
 

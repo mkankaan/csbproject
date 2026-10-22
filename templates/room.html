@@ -26,23 +26,26 @@
             <div class="user-list">
             <p>{{ members | join(', ') }}</p>
             {% if session.user_id == room.owner %}
-            <form class="add-member" action="/add_member" method="post">
-                <!-- csrf -->
-                <div style="display: grid; align-content: center;">Add members</div>
-                <div>
-                <input
-                    type="text"
-                    id="username"
-                    name="username"
-                />
-                <input
-                type="hidden"
-                name="room_id"
-                value="{{ room.id }}"
-                />
-                <input type="submit" value="Add" />
+            <div>
+                <form class="add-member" action="/add_member" method="post">
+                    <!-- csrf -->
+                    <div style="display: grid; align-content: center;">Add members</div>
+                    <div>
+                    <input
+                        type="text"
+                        id="username"
+                        name="username"
+                    />
+                    <input
+                    type="hidden"
+                    name="room_id"
+                    value="{{ room.id }}"
+                    />
+                    <input type="submit" value="Add" />
+                    </div>
+                    </form>
+                    <p>{{ session.user_not_found_error }}</p>
                 </div>
-                </form>
                 {% endif %}
             </div>
 

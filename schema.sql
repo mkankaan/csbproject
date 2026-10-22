@@ -13,8 +13,7 @@ CREATE TABLE rooms (
 
 CREATE TABLE members (
     user_id INTEGER REFERENCES users,
-    room_id INTEGER REFERENCES rooms,
-    joined INTEGER DEFAULT 0
+    room_id INTEGER REFERENCES rooms
 );
 
 CREATE TABLE messages (
