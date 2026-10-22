@@ -13,6 +13,12 @@ endblock %} {% block content %}
     <input type="submit" value="Create account" />
   </form>
 
+  <div class="error">
+  {% for message in get_flashed_messages() %}
+    {{ message }}
+  {% endfor %}
+  </div>
+
 </br><a href="/">Go back</a>
  
 {% endblock %}

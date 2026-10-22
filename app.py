@@ -4,6 +4,7 @@ from flask import render_template
 from flask import request
 from flask import redirect
 from flask import abort
+from flask import flash
 
 import sqlite3
 
@@ -50,7 +51,7 @@ def register():
             users.create_user(username, password)
             return redirect("/")
         except sqlite3.IntegrityError:
-            print("username taken")
+            flash("Username already taken")
             return render_template("register.html")
 
 
@@ -69,8 +70,8 @@ def login():
             session["username"] = username
             return redirect("/")
         else:
-            print("wrong username or password")
-            return render_template("login.html", error="Wrong username or password")
+            flash("Incorrect username or password")
+            return render_template("login.html")
 
 
 @app.route("/logout")
@@ -132,7 +133,7 @@ def chat_room(room_id):
     room_members = members.get_by_room(room_id)
     usernames=[member["username"] for member in room_members]
 
-    return render_template("room.html", room=room, user=user, messages=room_messages, members=usernames, error="")
+    return render_template("room.html", room=room, user=user, messages=room_messages, members=usernames)
 
 
 @app.route("/new_message", methods=["POST"])
@@ -156,13 +157,12 @@ def add_member():
         user = users.get_by_username(username)
 
         if not user:
-            session["user_not_found_error"] = "User doesn't exist"
+            flash("User doesn't exist")
             return redirect("/room/" + str(room_id))
         else:
             new_member_id = user["id"]
             print("found", username, "id", new_member_id)
             members.add_member(new_member_id, room_id)
-            del session["user_not_found_error"]
 
         return redirect("/room/" + str(room_id))
 
@@ -218,6 +218,9 @@ def change_password():
 
     if new_password != new_password2:
         return render_template("edit_profile.html", user=user, username_error="", password_error="Passwords don't match")
+
+    if old_password != user["password"]:
+        return render_template("edit_profile.html", user=user, username_error="", password_error="Old password is incorrect")
 
     if new_password == old_password:
         return render_template("edit_profile.html", user=user, username_error="", password_error="New password can't be the same as old password")

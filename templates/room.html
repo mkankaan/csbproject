@@ -44,7 +44,11 @@
                     <input type="submit" value="Add" />
                     </div>
                     </form>
-                    <p>{{ session.user_not_found_error }}</p>
+                    <div class="error">
+                        {% for message in get_flashed_messages() %}
+                            {{ message }}
+                        {% endfor %}
+                    </div>
                 </div>
                 {% endif %}
             </div>

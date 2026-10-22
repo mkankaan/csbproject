@@ -10,19 +10,25 @@ endblock %} {% block content %}
         type="text"
         id="username"
         name="username"
+        required
     />
     <label for="password">Password</label>
     <input
         type="password"
         id="password"
         name="password"
+        required
     />
     <input
         type="submit"
         value="Log in"
     />
   </form>
-  <p>{{ error }}</p>
+  <div class="error">
+  {% for message in get_flashed_messages() %}
+    {{ message }}
+  {% endfor %}
+  </div>
 
   <br/><a href="/register">Create account</a>
  

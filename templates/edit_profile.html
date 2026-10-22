@@ -7,20 +7,20 @@
     <input type="text" name="new_username" value="{{ user.username }}" />
     <input type="submit" value="Save" />
     </form>
-    <span>{{ username_error }}</span>
+    <div class="error">{{ username_error }}</div>
 </section>
 
 <section>
     <form class="edit-profile" action="/change_password" method="post">
     <label for="new_username">New password</label>
-    <input type="text" name="new_password" />
+    <input type="text" name="new_password" required />
     <label for="new_username">New password again</label>
-    <input type="text" name="new_password2" />
+    <input type="text" name="new_password2" required />
     <label for="new_username">Old password</label>
     <input type="text" name="old_password" required />
     <input type="submit" value="Change password" />
   </form> 
-    <span>{{ password_error }}</span>
+    <div class="error">{{ password_error }}</div>
 </section>
 
 <a href="/user/{{ user.id }}">Go back</a>

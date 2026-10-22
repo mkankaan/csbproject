@@ -182,3 +182,8 @@ button, input[type="submit"] {
     font-size: 1.25rem;
     color: #000000;
 }
+
+.error {
+    min-height: 1.5rem;
+    margin-top: .5rem;
+}
