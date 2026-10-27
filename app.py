@@ -129,11 +129,13 @@ def chat_room(room_id):
     if not room:
         abort(404)
 
+    print(room)
+
     room_messages = messages.get_messages_by_room(room_id)
     room_members = members.get_by_room(room_id)
-    usernames=[member["username"] for member in room_members]
+    #usernames=[member["username"] for member in room_members]
 
-    return render_template("room.html", room=room, user=user, messages=room_messages, members=usernames)
+    return render_template("room.html", room=room, user=user, messages=room_messages, members=room_members)
 
 
 @app.route("/new_message", methods=["POST"])

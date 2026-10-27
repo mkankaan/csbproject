@@ -22,7 +22,9 @@ def get_user_rooms(user_id):
 
 
 def get_room(room_id):
-    sql = "SELECT id, name, owner FROM rooms WHERE id = ?"
+    sql = """SELECT id, name, owner AS owner_id
+            FROM rooms
+            WHERE id = ?"""
     result = db.query(sql, [room_id])
     return result[0] if result else None
 

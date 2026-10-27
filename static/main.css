@@ -95,7 +95,7 @@ form.vertical-form {
     padding: 1rem;
     flex-grow: 1;
     overflow: scroll;
-    max-height: 60vh;
+    height: 60vh;
 }
 
 .message {
@@ -181,9 +181,4 @@ button, input[type="submit"] {
     font-weight: bold;
     font-size: 1.25rem;
     color: #000000;
-}
-
-.error {
-    min-height: 1.5rem;
-    margin-top: .5rem;
 }
