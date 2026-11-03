@@ -19,17 +19,6 @@ app.config['TEMPLATES_AUTO_RELOAD'] = True
 
 @app.route("/")
 def index():
-    all_users = users.get_all_users()
-
-    # delete
-    if len(all_users) > 0:
-        print("all users:")
-        for user in all_users:
-            print(user["username"], user["password"])
-    else:
-        print("no users")
-
-
     if "user_id" not in session:
         return redirect("/login")
     else:
@@ -83,8 +72,13 @@ def logout():
 
 
 @app.route("/user/<int:user_id>")
+# FIX (1):
+# @app.route("/profile")
 def user_page(user_id):
     user = users.get_user(user_id)
+    
+    # FIX (1):
+    # user_id = session["user_id"]
 
     if not user:
         abort(404)
