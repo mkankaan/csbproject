@@ -124,17 +124,14 @@ def new_room():
 def chat_room(room_id):
     """
     FLAW 1 FIX:
-    if "user_id" in session:
-        user = users.get_user(session["user_id"])
-    else:
+    if "user_id" not in session:
         abort(403)
     """
     
-    user = users.get_user(session["user_id"])
     room = rooms.get_room(room_id)
 
     if not room:
-            abort(404)
+        abort(404)
 
     room_messages = messages.get_messages_by_room(room_id)
     room_members = members.get_by_room(room_id)
@@ -145,7 +142,7 @@ def chat_room(room_id):
         abort(403)
     """
 
-    return render_template("room.html", room=room, user=user, messages=room_messages, members=room_members)
+    return render_template("room.html", room=room, messages=room_messages, members=room_members)
 
 
 @app.route("/new_message", methods=["POST"])
