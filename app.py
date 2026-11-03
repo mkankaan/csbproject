@@ -177,7 +177,13 @@ def leave_room():
 
 @app.route("/edit_profile/<int:user_id>", methods=["GET"])
 def edit_profile(user_id):
+# FIX (1):
+# @app.route("/edit_profile", methods=["GET"])
+# def edit_profile():
     if request.method == "GET":
+
+        # FIX (1):
+        # user_id = session["user_id"]
         user = users.get_user(user_id)
         
         if not user:
