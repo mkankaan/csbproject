@@ -76,7 +76,7 @@ def logout():
 # @app.route("/profile")
 def user_page(user_id):
     user = users.get_user(user_id)
-    
+
     # FIX (1):
     # user_id = session["user_id"]
 
@@ -123,11 +123,12 @@ def chat_room(room_id):
     if not room:
         abort(404)
 
-    print(room)
-
     room_messages = messages.get_messages_by_room(room_id)
     room_members = members.get_by_room(room_id)
-    #usernames=[member["username"] for member in room_members]
+
+    # FIX (1):
+    # if session["user_id"] not in [member["user_id"] for member in room_members]:
+    #   abort(403)
 
     return render_template("room.html", room=room, user=user, messages=room_messages, members=room_members)
 
