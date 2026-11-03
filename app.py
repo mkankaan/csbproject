@@ -72,13 +72,18 @@ def logout():
 
 
 @app.route("/user/<int:user_id>")
-# FIX (1):
+# FLAW 1 FIX:
 # @app.route("/profile")
-def user_page(user_id):
-    user = users.get_user(user_id)
+def user_page(user_id):    
+    """
+    FLAW 1 FIX:
+    if "user_id" in session:
+        user_id = users.get_user(session["user_id"])
+    else:
+        abort(403)
+    """
 
-    # FIX (1):
-    # user_id = session["user_id"]
+    user = users.get_user(user_id)
 
     if not user:
         abort(404)
@@ -117,18 +122,28 @@ def new_room():
 
 @app.route("/room/<int:room_id>")
 def chat_room(room_id):
+    """
+    FLAW 1 FIX:
+    if "user_id" in session:
+        user = users.get_user(session["user_id"])
+    else:
+        abort(403)
+    """
+    
+    user = users.get_user(session["user_id"])
     room = rooms.get_room(room_id)
-    user = users.get_user(session["user_id"])  
 
     if not room:
-        abort(404)
+            abort(404)
 
     room_messages = messages.get_messages_by_room(room_id)
     room_members = members.get_by_room(room_id)
 
-    # FIX (1):
-    # if session["user_id"] not in [member["user_id"] for member in room_members]:
-    #   abort(403)
+    """
+    FLAW 1 FIX:
+    if session["user_id"] not in [member["user_id"] for member in room_members]:
+        abort(403)
+    """
 
     return render_template("room.html", room=room, user=user, messages=room_messages, members=room_members)
 
@@ -177,13 +192,17 @@ def leave_room():
 
 @app.route("/edit_profile/<int:user_id>", methods=["GET"])
 def edit_profile(user_id):
-# FIX (1):
+# FLAW 1 FIX:
 # @app.route("/edit_profile", methods=["GET"])
 # def edit_profile():
     if request.method == "GET":
-
-        # FIX (1):
-        # user_id = session["user_id"]
+        """
+        FLAW 1 FIX:
+        if "user_id" in session:
+            user_id = users.get_user(session["user_id"])
+        else:
+            abort(403)
+        """
         user = users.get_user(user_id)
         
         if not user:
