@@ -86,7 +86,6 @@
     <footer>
         <div>
             <form action="/new_message" method="post">
-            <!-- csrf -->
             <input
                 type="text"
                 id="content"
@@ -102,7 +101,7 @@
             name="room_id"
             value="{{ room.id }}"
             />
-            <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" />  <!-- FLAW 3 FIX -->
+            <!-- <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" /> -->  <!-- FLAW 3 FIX -->
             <input type="submit" value="Send" />
             </form>
             <div class="footer-buttons">
