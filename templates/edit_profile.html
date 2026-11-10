@@ -5,6 +5,7 @@
     <form class="edit-profile change-username" action="/change_username" method="post">
     <label for="new_username">Username</label>
     <input type="text" name="new_username" value="{{ user.username }}" />
+    <!-- <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" /> -->  <!-- FLAW 3 FIX -->
     <input type="submit" value="Save" />
     </form>
     <div class="error">{{ username_error }}</div>
@@ -18,6 +19,7 @@
     <input type="text" name="new_password2" required />
     <label for="new_username">Old password</label>
     <input type="text" name="old_password" required />
+    <!-- <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" /> -->  <!-- FLAW 3 FIX -->
     <input type="submit" value="Change password" />
   </form> 
     <div class="error">{{ password_error }}</div>

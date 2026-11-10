@@ -239,7 +239,12 @@ def edit_profile(user_id):
 @app.route("/change_username", methods=["POST"])
 def change_username():
     if request.method == "POST":
-        # csrf!
+        """
+        FLAW 3 FIX:
+        if "csrf_token" not in request.form or request.form["csrf_token"] != session["csrf_token"]:
+            abort(403)
+        """
+        
         user_id = session["user_id"]
         user = users.get_user(user_id)
         new_username = request.form["new_username"]
@@ -258,7 +263,12 @@ def change_username():
 @app.route("/change_password", methods=["POST"])
 def change_password():
     if request.method == "POST":
-        # csrf!
+        """
+        FLAW 3 FIX:
+        if "csrf_token" not in request.form or request.form["csrf_token"] != session["csrf_token"]:
+            abort(403)
+        """
+        
         user_id = session["user_id"]
         user = users.get_user(user_id)
         new_password = request.form["new_password"]
