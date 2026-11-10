@@ -18,6 +18,7 @@ app = Flask(__name__)
 app.secret_key = "1"
 app.config['TEMPLATES_AUTO_RELOAD'] = True
 
+
 @app.route("/")
 def index():
     if "user_id" not in session:
@@ -58,7 +59,8 @@ def login():
         if user_id:
             session["user_id"] = user_id
             session["username"] = username
-            session["csrf_token"] = secrets.token_hex(16) # fix: csrf
+            # FLAW 3 FIX:
+            # session["csrf_token"] = secrets.token_hex(16)
             return redirect("/")
         else:
             flash("Incorrect username or password")
@@ -70,6 +72,8 @@ def logout():
     if "user_id" in session:
         del session["user_id"]
         del session["username"]
+        # FLAW 3 FIX:
+        # del session["csrf_token"]
     return redirect("/")
 
 
@@ -114,6 +118,12 @@ def new_room():
         return render_template("new_room.html")
 
     if request.method == "POST":
+        """
+        FLAW 3 FIX:
+        if "csrf_token" not in request.form or request.form["csrf_token"] != session["csrf_token"]:
+            abort(403)
+        """
+        
         room_name = request.form["room_name"]
         user_id = session["user_id"]
         rooms.create_room(room_name, user_id)
@@ -151,11 +161,11 @@ def new_message():
     if request.method == "POST":
         print(dict(request.form))
 
-        #"""
-        #FLAW 3 FIX:
+        """
+        FLAW 3 FIX:
         if "csrf_token" not in request.form or request.form["csrf_token"] != session["csrf_token"]:
             abort(403)
-        #"""
+        """
 
         room_id = request.form["room_id"]
         content = request.form["content"]
@@ -192,6 +202,12 @@ def add_member():
 @app.route("/leave_room", methods=["POST"])
 def leave_room():
     if request.method == "POST":
+        """
+        FLAW 3 FIX:
+        if "csrf_token" not in request.form or request.form["csrf_token"] != session["csrf_token"]:
+            abort(403)
+        """
+        
         room_id = request.form["room_id"]
         user_id = session["user_id"]
         members.remove_member(user_id, room_id)
@@ -223,6 +239,7 @@ def edit_profile(user_id):
 @app.route("/change_username", methods=["POST"])
 def change_username():
     if request.method == "POST":
+        # csrf!
         user_id = session["user_id"]
         user = users.get_user(user_id)
         new_username = request.form["new_username"]
@@ -241,6 +258,7 @@ def change_username():
 @app.route("/change_password", methods=["POST"])
 def change_password():
     if request.method == "POST":
+        # csrf!
         user_id = session["user_id"]
         user = users.get_user(user_id)
         new_password = request.form["new_password"]
@@ -265,6 +283,7 @@ def change_password():
 @app.route("/delete_room/<int:room_id>", methods=["POST"])
 def delete_room(room_id):
     if request.method == "POST":
+        # csrf!
         room_id = request.form["room_id"]
         user_id = session["user_id"]
 

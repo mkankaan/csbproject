@@ -4,13 +4,13 @@ endblock %} {% block content %}
   <div class="center">
     <h2>New chat room</h2>
     <form class="vertical-form" action="/new_room" method="post">
-      <!-- csrf -->
         <p>Give your chat room a name</p>
         <input
             type="text"
             id="room_name"
             name="room_name"
         />
+        <!-- <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" /> -->  <!-- FLAW 3 FIX -->
         <input type="submit" value="Create" />
     </form>
     <a href="/">Go back</a>
