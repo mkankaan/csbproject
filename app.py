@@ -152,7 +152,6 @@ def chat_room(room_id):
         abort(403)
     """
 
-
     return render_template("room.html", room=room, messages=room_messages, members=room_members)
 
 
@@ -256,7 +255,6 @@ def change_username():
         return render_template("edit_profile.html", user=user, username_error="", password_error="")
     
     except sqlite3.IntegrityError:
-        print("username taken")
         return render_template("edit_profile.html", user=user, username_error="Username already taken", password_error="")
 
 
@@ -301,9 +299,5 @@ def delete_room(room_id):
 
         room_id = request.form["room_id"]
         user_id = session["user_id"]
-
-        # check that user is owner
-
         rooms.delete_room(room_id)
         return redirect("/user/" + str(user_id))
-
