@@ -112,6 +112,7 @@
                 name="room_id"
                 value="{{ room.id }}"
                 />
+                <!-- <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" /> -->  <!-- FLAW 3 FIX -->
                 <input type="submit" name="continue" value="Delete room" />
                 </form>
             {% else %}
@@ -121,6 +122,7 @@
                 name="room_id"
                 value="{{ room.id }}"
                 />
+                <!-- <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" /> -->  <!-- FLAW 3 FIX -->
                 <input type="submit" name="continue" value="Leave room" />
                 </form>
             {% endif %}

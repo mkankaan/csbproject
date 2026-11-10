@@ -283,7 +283,12 @@ def change_password():
 @app.route("/delete_room/<int:room_id>", methods=["POST"])
 def delete_room(room_id):
     if request.method == "POST":
-        # csrf!
+        """
+        FLAW 3 FIX:
+        if "csrf_token" not in request.form or request.form["csrf_token"] != session["csrf_token"]:
+            abort(403)
+        """
+
         room_id = request.form["room_id"]
         user_id = session["user_id"]
 
