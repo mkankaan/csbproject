@@ -26,8 +26,7 @@
             <div class="user-list">
                 <p>Members: 
                     {% for member in members %}
-                        {{ member.username }}
-                        {% if member.user_id == room.owner_id %} (owner){% endif %}{% if not loop.last %},{% endif %}
+                        {{ member.username }}{% if member.user_id == room.owner_id %} (owner){% endif %}{% if not loop.last %},{% endif %}
                     {% endfor %}
                 </p>
 
@@ -95,9 +94,15 @@
             />
             <input
             type="hidden"
+            name="user_id"
+            value="{{ session.user_id }}"
+            />
+            <input
+            type="hidden"
             name="room_id"
             value="{{ room.id }}"
             />
+            <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" />  <!-- FLAW 3 FIX -->
             <input type="submit" value="Send" />
             </form>
             <div class="footer-buttons">

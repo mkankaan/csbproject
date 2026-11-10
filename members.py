@@ -2,8 +2,13 @@ import db
 
 
 def add_member(user_id, room_id):
-    sql = f"INSERT INTO members (user_id, room_id) VALUES ('{user_id}', '{room_id}')"
-    db.execute(sql)
+    sql = f"SELECT * FROM members WHERE user_id = {user_id} AND room_id = {room_id}"
+    result = db.query(sql)
+    already_member = True if result else False
+
+    if not already_member:
+        sql = f"INSERT INTO members (user_id, room_id) VALUES ('{user_id}', '{room_id}')"
+        db.execute(sql)
 
 
 def get_by_room(room_id):

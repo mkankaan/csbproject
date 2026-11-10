@@ -99,12 +99,11 @@ def user_page(user_id):
                                "owner": room["owner"],
                                "owner_username": room["owner_username"],
                                "name": room["name"],
-                               "members": [room["owner_username"]]}
+                               "members": []}
         room_members = list(members.get_by_room(room_id))
 
         for member in room_members:
-            if member["username"] != room["owner_username"]:
-                chat_rooms[room_id]["members"].append(member["username"]) 
+            chat_rooms[room_id]["members"].append(member["username"]) 
 
     return render_template("user.html", user=user, chat_rooms = chat_rooms)
 
@@ -117,8 +116,6 @@ def new_room():
     if request.method == "POST":
         room_name = request.form["room_name"]
         user_id = session["user_id"]
-        print("create chat room", room_name, "user", user_id)
-
         rooms.create_room(room_name, user_id)
         return redirect("/user/" + str(session["user_id"]))
 
@@ -145,12 +142,21 @@ def chat_room(room_id):
         abort(403)
     """
 
+
     return render_template("room.html", room=room, messages=room_messages, members=room_members)
 
 
 @app.route("/new_message", methods=["POST"])
 def new_message():
     if request.method == "POST":
+        print(dict(request.form))
+
+        #"""
+        #FLAW 3 FIX:
+        if "csrf_token" not in request.form or request.form["csrf_token"] != session["csrf_token"]:
+            abort(403)
+        #"""
+
         room_id = request.form["room_id"]
         content = request.form["content"]
         user_id = request.form["user_id"]
@@ -174,7 +180,7 @@ def add_member():
         user = users.get_by_username(username)
 
         if not user:
-            flash("User doesn't exist")
+            flash("User not found")
             return redirect("/room/" + str(room_id))
         else:
             new_member_id = user["id"]
@@ -188,9 +194,7 @@ def leave_room():
     if request.method == "POST":
         room_id = request.form["room_id"]
         user_id = session["user_id"]
-        print("remove user", user_id, "from room", room_id)
         members.remove_member(user_id, room_id)
-        print("left room")
         return redirect("/user/" + str(user_id))
 
 
@@ -207,6 +211,7 @@ def edit_profile(user_id):
         else:
             abort(403)
         """
+
         user = users.get_user(user_id)
         
         if not user:
