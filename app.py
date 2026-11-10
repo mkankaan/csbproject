@@ -7,6 +7,7 @@ from flask import abort
 from flask import flash
 
 import sqlite3
+import secrets
 
 import users
 import rooms
@@ -57,6 +58,7 @@ def login():
         if user_id:
             session["user_id"] = user_id
             session["username"] = username
+            session["csrf_token"] = secrets.token_hex(16) # fix: csrf
             return redirect("/")
         else:
             flash("Incorrect username or password")
@@ -95,13 +97,14 @@ def user_page(user_id):
         room_id = room["id"]
         chat_rooms[room_id] = { "id": room_id,
                                "owner": room["owner"],
-                                "owner_username": room["owner_username"],
+                               "owner_username": room["owner_username"],
                                "name": room["name"],
-                               "members": []}
+                               "members": [room["owner_username"]]}
         room_members = list(members.get_by_room(room_id))
 
         for member in room_members:
-            chat_rooms[room_id]["members"].append(member["username"])   
+            if member["username"] != room["owner_username"]:
+                chat_rooms[room_id]["members"].append(member["username"]) 
 
     return render_template("user.html", user=user, chat_rooms = chat_rooms)
 
@@ -150,19 +153,24 @@ def new_message():
     if request.method == "POST":
         room_id = request.form["room_id"]
         content = request.form["content"]
-        user_id = session["user_id"]
+        user_id = request.form["user_id"]
         messages.create_message(user_id, room_id, content)
         return redirect("/room/" + str(room_id))
 
 
 @app.route("/add_member", methods=["POST"])
 def add_member():
-    if request.method == "POST":
-        # check that logged in user is owner
+    if request.method == "POST":        
+        print(dict(request.form))
+
+        """
+        FLAW 3 FIX:
+        if "csrf_token" not in request.form or request.form["csrf_token"] != session["csrf_token"]:
+            abort(403)
+        """
+        
         room_id = request.form["room_id"]
         username = request.form["username"]
-        print("add member", username, "to room", room_id)
-
         user = users.get_by_username(username)
 
         if not user:
@@ -170,7 +178,6 @@ def add_member():
             return redirect("/room/" + str(room_id))
         else:
             new_member_id = user["id"]
-            print("found", username, "id", new_member_id)
             members.add_member(new_member_id, room_id)
 
         return redirect("/room/" + str(room_id))
