@@ -7,6 +7,12 @@ def create_room(room_name, user_id):
     sql = f"INSERT INTO rooms (name, owner) VALUES ('{room_name}', '{user_id}')"
     db.execute(sql)
 
+    """
+    FLAW 2 FIX:
+    sql = "INSERT INTO rooms (name, owner) VALUES (?, ?)"
+    db.execute(sql, [room_name, user_id])
+    """
+
     new_room_id = last_room_by_user(user_id)
     members.add_member(user_id, new_room_id)
 
@@ -29,7 +35,7 @@ def get_room(room_id):
     return result[0] if result else None
 
 
-# workaround for lastrowid which didn't seem to work with executescript
+# workaround for lastrowid which didn't seem to work with executescript (in db.py)
 def last_room_by_user(user_id):
     sql = """SELECT id
              FROM rooms
@@ -45,3 +51,9 @@ def delete_room(room_id):
     members.delete_by_room(room_id)
     sql = f"DELETE FROM rooms WHERE id = '{room_id}'"
     db.execute(sql)
+
+    """
+    FLAW 2 FIX:
+    sql = "DELETE FROM rooms WHERE id = ?"
+    db.execute(sql, [room_id])
+    """
