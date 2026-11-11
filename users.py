@@ -5,6 +5,12 @@ def create_user(username, password):
     sql = f"INSERT INTO users (username, password) VALUES ('{username}', '{password}')"
     db.execute(sql)
 
+    """
+    FLAW 2 FIX:
+    sql = "INSERT INTO users (username, password) VALUES (?, ?)"
+    db.execute(sql, [username, password])
+    """
+
 
 def get_user(user_id):
     sql = "SELECT id, username, password FROM users WHERE id = ?"
@@ -38,9 +44,21 @@ def check_password_matches(username, password):
 
 def change_username(user_id, new_username):
     sql = f"UPDATE users SET username = '{new_username}' WHERE id = '{user_id}'"
+    db.execute(sql)
+
+    """
+    FLAW 2 FIX:
+    sql = "UPDATE users SET username = ? WHERE id = ?"
     db.execute(sql, [new_username, user_id])
+    """
 
 
 def change_password(user_id, new_password):
     sql = f"UPDATE users SET password = '{new_password}' WHERE id = '{user_id}'"
+    db.execute(sql)
+
+    """
+    FLAW 2 FIX:
+    sql = "UPDATE users SET password = ? WHERE id = ?"
     db.execute(sql, [new_password, user_id])
+    """

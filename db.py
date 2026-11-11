@@ -11,8 +11,8 @@ def get_connection():
 
 def execute(sql, params=[]):
     con = get_connection()
-    #result = con.execute(sql, params) # sql injection fix
     result = con.executescript(sql)
+    # result = con.execute(sql, params) # FLAW 2 FIX
     con.commit()
     g.last_insert_id = result.lastrowid
     con.close()
