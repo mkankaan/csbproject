@@ -2,7 +2,10 @@
 <section>
     <h2>My profile</h2>
 
-    <p>{{ user.username }}</p>
+    <div class="profile-info">
+    <label>Username</label>
+    <span>{{ user.username }}</span>
+    </div>
     <!-- <p>User id: {{ user.id }}</p> -->
     <br/>
     <a href="/edit_profile/{{ user.id }}"><button>Edit profile</button></a>
