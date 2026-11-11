@@ -8,6 +8,12 @@ def create_message(user_id, room_id, content):
         """
     db.execute(sql)
 
+    """
+    FLAW 2 FIX:
+    sql = "INSERT INTO messages (user_id, room_id, content, time) VALUES (?, ?, ?, datetime('now'))"
+    db.execute(sql, [user_id, room_id, content])
+    """
+    
 
 def get_messages_by_room(room_id):
     sql = """SELECT users.username, messages.user_id, messages.content, messages.time
@@ -23,3 +29,9 @@ def get_messages_by_room(room_id):
 def delete_by_room(room_id):
     sql = f"DELETE FROM messages WHERE room_id = '{room_id}'"
     db.execute(sql)
+
+    """
+    FLAW 2 FIX:
+    sql = "DELETE FROM messages WHERE room_id = ?"
+    db.execute(sql, [room_id])
+    """
