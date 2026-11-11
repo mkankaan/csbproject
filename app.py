@@ -78,13 +78,14 @@ def logout():
 
 
 @app.route("/user/<int:user_id>")
+def user_page(user_id):
 # FLAW 1 FIX:
 # @app.route("/profile")
-def user_page(user_id):    
+# def user_page():
     """
     FLAW 1 FIX:
     if "user_id" in session:
-        user_id = users.get_user(session["user_id"])
+        user_id = session["user_id"]
     else:
         abort(403)
     """
@@ -244,7 +245,11 @@ def change_username():
             abort(403)
         """
         
-        user_id = session["user_id"]
+        user_id = request.form["user_id"]
+
+        # FLAW 1 FIX:
+        # user_id = session["user_id"]
+
         user = users.get_user(user_id)
         new_username = request.form["new_username"]
 
