@@ -159,7 +159,7 @@ def chat_room(room_id):
 @app.route("/new_message", methods=["POST"])
 def new_message():
     if request.method == "POST":
-        print(dict(request.form))
+        print(dict(request.form)) # for screenshots
 
         """
         FLAW 3 FIX:
@@ -177,7 +177,7 @@ def new_message():
 @app.route("/add_member", methods=["POST"])
 def add_member():
     if request.method == "POST":        
-        print(dict(request.form))
+        print(dict(request.form)) # for screenshots
 
         """
         FLAW 3 FIX:
@@ -276,7 +276,7 @@ def change_password():
         
         # FLAW 1 FIX:
         # user_id = session["user_id"]
-        
+
         user = users.get_user(user_id)
         new_password = request.form["new_password"]
         new_password2 = request.form["new_password2"]
