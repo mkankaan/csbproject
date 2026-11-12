@@ -223,7 +223,7 @@ def edit_profile(user_id):
         """
         FLAW 1 FIX:
         if "user_id" in session:
-            user_id = users.get_user(session["user_id"])
+            user_id = session["user_id"]
         else:
             abort(403)
         """
@@ -272,7 +272,11 @@ def change_password():
             abort(403)
         """
         
-        user_id = session["user_id"]
+        user_id = request.form["user_id"]
+        
+        # FLAW 1 FIX:
+        # user_id = session["user_id"]
+        
         user = users.get_user(user_id)
         new_password = request.form["new_password"]
         new_password2 = request.form["new_password2"]
