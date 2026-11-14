@@ -5,15 +5,19 @@ from flask import request
 from flask import redirect
 from flask import abort
 from flask import flash
+from flask import url_for
 
 import sqlite3
 import secrets
+import logging
+import hashlib
 
 import users
 import rooms
 import messages
 import members
 
+#logging.basicConfig(filename='record.log', level=logging.DEBUG) # FLAW 5 FIX
 app = Flask(__name__)
 app.secret_key = "1"
 app.config['TEMPLATES_AUTO_RELOAD'] = True
@@ -35,11 +39,21 @@ def register():
     if request.method == "POST":
         username = request.form["username"]
         password = request.form["password"]
-       
+
         # check username + password valid
+
+        sha1 = hashlib.sha1()
+        sha1.update(password.encode())
+        password_hash = sha1.hexdigest()       
+
+        # for screenshots
+        print("created user:")
+        print("username:\t", username)
+        print("password:\t", password)
+        print("password hash:\t", password_hash)
        
         try:
-            users.create_user(username, password)
+            users.create_user(username, password_hash)
             return redirect("/")
         except sqlite3.IntegrityError:
             flash("Username already taken")
@@ -153,7 +167,22 @@ def chat_room(room_id):
         abort(403)
     """
 
-    return render_template("room.html", room=room, messages=room_messages, members=room_members)
+    return render_template("room.html", room=room, messages=room_messages, members=room_members, user_search_results=[])
+
+
+@app.route("/search_user", methods=["POST"])
+def search_user():
+    username = request.form["username"]
+    room_id = request.form["room_id"]
+    print("searching")
+    print(dict(request.form))
+    results = users.search_user(username, room_id)
+
+    room = rooms.get_room(room_id)
+    room_messages = messages.get_messages_by_room(room_id)
+    room_members = members.get_by_room(room_id)
+
+    return render_template("room.html", room=room, messages=room_messages, members=room_members, user_search_results=results)
 
 
 @app.route("/new_message", methods=["POST"])
@@ -186,16 +215,8 @@ def add_member():
         """
         
         room_id = request.form["room_id"]
-        username = request.form["username"]
-        user = users.get_by_username(username)
-
-        if not user:
-            flash("User not found")
-            return redirect("/room/" + str(room_id))
-        else:
-            new_member_id = user["id"]
-            members.add_member(new_member_id, room_id)
-
+        user = users.get_by_username(request.form.get("username"))
+        members.add_member(user["id"], room_id)
         return redirect("/room/" + str(room_id))
 
 

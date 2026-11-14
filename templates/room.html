@@ -31,8 +31,8 @@
                 </p>
 
             {% if session.user_id == room.owner_id %}
-            <div>
-                <form class="add-member" action="/add_member" method="post">
+            <div class="add-member-form">
+                <form action="/search_user" method="post">
                     <div style="display: grid; align-content: center;">Enter username</div>
                     <div>
                     <input
@@ -51,9 +51,25 @@
                     value="{{ session.user_id }}"
                     />
                     <!-- <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" /> --> <!-- FLAW 3 FIX -->
-                    <input type="submit" value="Add member" />
+                    <input type="submit" value="Search" />
                     </div>
                 </form>
+
+                <div class="user-select">
+                    {% if user_search_results %}
+                    <form action="/add_member" method="post">
+                        <select class="user-select" name="username" id="username">
+                            {% for user in user_search_results %}
+                            <option value="{{ user.username }}">{{ user.username }}</option>
+                            {% endfor %}
+                        </select>
+                        <input type="hidden" name="room_id" value="{{ room.id }}" />
+                        <input type="submit" value="Add member" />
+                    </form>
+                    {% else %}
+                        <input class="btn-disabled" type="submit" value="Add member" disabled />
+                    {% endif %}
+                </div>
                 <div class="error">
                     {% for message in get_flashed_messages() %}
                         {{ message }}
