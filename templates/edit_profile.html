@@ -24,7 +24,11 @@
     <!-- <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" /> -->  <!-- FLAW 3 FIX -->
     <input type="submit" value="Change password" />
   </form> 
-    <div class="error">{{ password_error }}</div>
+    <div class="error">
+        {% for message in get_flashed_messages() %}
+            {{ message }}
+        {% endfor %}
+    </div>
 </section>
 
 <a href="/user/{{ user.id }}">Go back</a>

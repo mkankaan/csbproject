@@ -125,7 +125,11 @@ def change_username(user_id, new_username):
 
 
 def change_password(user_id, new_password):
-    sql = f"UPDATE users SET password = '{new_password}' WHERE id = '{user_id}'"
+    sha1 = hashlib.sha1()
+    sha1.update(new_password.encode())
+    new_password_hash = sha1.hexdigest()
+    
+    sql = f"UPDATE users SET password_hash = '{new_password_hash}' WHERE id = '{user_id}'"
     db.execute(sql)
 
     """

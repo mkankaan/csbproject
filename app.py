@@ -9,6 +9,7 @@ from flask import flash
 import sqlite3
 import secrets
 import logging
+import hashlib
 
 import users
 import rooms
@@ -288,23 +289,42 @@ def change_password():
         # user_id = session["user_id"]
 
         user = users.get_user(user_id)
-        new_password = request.form["new_password"]
+        new_password1 = request.form["new_password"]
         new_password2 = request.form["new_password2"]
         old_password = request.form["old_password"]
 
-    if new_password != new_password2:
-        return render_template("edit_profile.html", user=user, username_error="", password_error="Passwords don't match")
+        errors = validate_new_password(new_password1, new_password2, old_password, user["password_hash"])
 
-    if old_password != user["password"]:
-        return render_template("edit_profile.html", user=user, username_error="", password_error="Old password is incorrect")
+        if errors == []:
+            users.change_password(user_id, new_password1)
+            print("password changed")
+            flash("Password changed")
+        else:
+            for error in errors:
+                flash(error)
 
-    if new_password == old_password:
-        return render_template("edit_profile.html", user=user, username_error="", password_error="New password can't be the same as old password")
+        return render_template("edit_profile.html", user=user, username_error="")
 
-    # validate new password
 
-    users.change_password(user_id, new_password)
-    return render_template("edit_profile.html", user=user, username_error="", password_error="")
+def validate_new_password(new_password1, new_password2, old_password, old_password_hash):
+    if new_password1 != new_password2:
+        return ["Passwords don't match"]
+
+    sha1 = hashlib.sha1()
+    sha1.update(old_password.encode())
+    old_password_input_hash = sha1.hexdigest()
+
+    if old_password_input_hash != old_password_hash:
+        return ["Old password is incorrect"]
+
+    sha1 = hashlib.sha1()
+    sha1.update(new_password1.encode())
+    new_password_hash = sha1.hexdigest()
+            
+    if new_password_hash == old_password_hash:
+        return ["New password can't be the same as old password"]
+
+    return []
 
 
 @app.route("/delete_room/<int:room_id>", methods=["POST"])
