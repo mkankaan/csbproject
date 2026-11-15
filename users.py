@@ -2,7 +2,7 @@ import db
 import os
 import hashlib
 import hmac
-from scrypt_params import *
+from security_params import *
 
 
 def create_user(username, password):

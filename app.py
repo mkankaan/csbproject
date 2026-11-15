@@ -11,12 +11,13 @@ import hashlib
 import secrets # FLAW 3 FIX
 import logging # FLAW 5 FIX
 import hmac # FLAW 4 FIX
+import re # FLAW 6 FIX
 
 import users
 import rooms
 import messages
 import members
-from scrypt_params import * # FLAW 4 FIX
+from security_params import * # FLAW 4 FIX
 
 #logging.basicConfig(filename='record.log', level=logging.DEBUG) # FLAW 5 FIX
 app = Flask(__name__)
@@ -40,23 +41,25 @@ def register():
     if request.method == "POST":
         username = request.form["username"]
         password = request.form["password"]
+        errors = []
    
         if len(username.replace(' ', '')) != len(username):
-            flash("Username can't contain spaces")
-            return render_template("register.html")
+            errors.append("Username can't contain spaces")
 
         if len(password.replace(' ', '')) != len(password):
-            flash("Password can't contain spaces")
-            return render_template("register.html")
+            errors.append("Password can't contain spaces")
 
-        # check username + password valid  , limit pw length    
-       
+        # FLAW 6 FIX:
+        # errors += strong_password(password, username)
+
+        if errors:
+            return render_template("register.html", errors=errors)       
+
         try:
             users.create_user(username, password)
             return redirect("/")
         except sqlite3.IntegrityError:
-            flash("Username already taken")
-            return render_template("register.html")
+            return render_template("register.html", errors=["Username already taken"])       
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -366,6 +369,33 @@ def validate_new_password(new_password1, new_password2, old_password, old_passwo
         return ["New password can't be the same as old password"]
 
     return []
+"""
+
+"""
+FLAW 6 FIX:
+def strong_password(password, username):
+    errors = []
+    password_stripped = password.replace(' ', '')
+
+    if not re.search('\d', password):
+        errors.append("Password should contain at least one number")
+
+    if not re.search('.*[a-z].*', password):
+            errors.append("Password should contain at least one lowercase letter")
+
+    if not re.search('.*[A-Z].*', password):
+        errors.append("Password should contain at least one uppercase letter")
+
+    if len(password_stripped) < MIN_PASSWORD_LENGTH:
+        errors.append(f"Password should be at least {MIN_PASSWORD_LENGTH} characters")
+
+    if len(password_stripped) > MAX_PASSWORD_LENGTH:
+        errors.append("Password is too long")
+
+    if password == username:
+        errors.append("Username and password must be different")
+
+    return errors
 """
 
 
