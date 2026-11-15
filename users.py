@@ -10,24 +10,23 @@ def create_user(username, password):
     sha1.update(password.encode())
     password_hash = sha1.hexdigest()
     sql = f"INSERT INTO users (username, password_hash, salt) VALUES ('{username}', '{password_hash}', '')"
-    #db.execute(sql) # kommentti pois
+    db.execute(sql)
 
-    ### FLAW 4 FIX:
+    """
+    FLAW 4 FIX:
     salt = os.urandom(16)
     password_hash = hashlib.scrypt(password.encode(), salt=salt, n=N, r=R, p=P, maxmem=MAXMEM)
-    ###
 
-    ### FLAWS 2 & 4 FIX:
+    FLAWS 2 & 4 FIX:
     sql = "INSERT INTO users (username, password_hash, salt) VALUES (?, ?, ?)"
     db.execute(sql, [username, password_hash, salt])
-    ###
+    """
     
     # for screenshots
     print("Create user:") 
     print("Username:\t", username)
     print("Password:\t", password)
     print("Password hash:\t", password_hash)
-
 
 
 def get_user(user_id):
@@ -46,8 +45,8 @@ def get_all_users():
     sql = "SELECT username, password FROM users"
     return db.query(sql)
 
-# bad code
-def _check_password_matches(username, password):
+
+def check_password_matches(username, password):
     sql = "SELECT id, password_hash FROM users WHERE username = ?"
     result = db.query(sql, [username])
 
@@ -62,7 +61,8 @@ def _check_password_matches(username, password):
     
     return None
 
-# FLAW 2 & 4 FIX
+"""
+FLAWS 2 & 4 FIX:
 def check_password_matches(username, password):
 
     # FLAW 2 FIX:
@@ -80,6 +80,7 @@ def check_password_matches(username, password):
             return user_id
 
     return None
+"""
         
 
 def change_username(user_id, new_username):
@@ -92,8 +93,8 @@ def change_username(user_id, new_username):
     db.execute(sql, [new_username, user_id])
     """
 
-# bad code
-def _change_password(user_id, new_password):
+
+def change_password(user_id, new_password):
     sha1 = hashlib.sha1()
     sha1.update(new_password.encode())
     new_password_hash = sha1.hexdigest()
@@ -103,20 +104,21 @@ def _change_password(user_id, new_password):
 
     """
     FLAW 2 FIX:
-    sql = "UPDATE users SET password = ? WHERE id = ?"
-    db.execute(sql, [new_password, user_id])
+    sql = "UPDATE users SET password_hash = ? WHERE id = ?"
+    db.execute(sql, [new_password_hash, user_id])
     """
 
 
-# FLAW 4 FIX
+"""
+FLAW 4 FIX:
 def change_password(user_id, new_password):
     salt = get_user(user_id)["salt"]
     new_password_hash = hashlib.scrypt(new_password.encode(), salt=salt, n=N, r=R, p=P, maxmem=MAXMEM)
     sql = "UPDATE users SET password_hash = ? WHERE id = ?"
     db.execute(sql, [new_password_hash, user_id])
+"""
 
 
-# fix
 def search_user(search_word, room_id):
     sql = f"""SELECT users.username
         FROM users
@@ -128,3 +130,10 @@ def search_user(search_word, room_id):
 
     return db.query(sql)
 
+
+"""
+FLAW 2 FIX:
+def search_user(search_word, room_id):
+    sql = "SELECT users.username FROM users LEFT JOIN members ON users.id = members.user_id WHERE users.id NOT IN (SELECT user_id FROM rooms WHERE room_id = ?) AND username LIKE ?"
+    return db.query(sql, [room_id, "%" + search_word + "%"])
+"""
