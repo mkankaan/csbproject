@@ -371,8 +371,8 @@ def validate_new_password(new_password1, new_password2, old_password, old_passwo
     return []
 """
 
-#"""
-#FLAW 6 FIX:
+"""
+FLAW 6 FIX:
 def strong_password(password, username):
     errors = []
     password_stripped = password.replace(' ', '')
@@ -401,7 +401,7 @@ def strong_password(password, username):
         errors.append("Password is too weak")
 
     return errors
-#"""
+"""
 
 
 @app.route("/delete_room/<int:room_id>", methods=["POST"])
