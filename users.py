@@ -64,11 +64,11 @@ def get_all_users():
 
 
 def check_password_matches(username, password):
-    sql = "SELECT id, password_hash, salt FROM users WHERE username = ?"
+    sql = "SELECT id, password_hash FROM users WHERE username = ?"
     result = db.query(sql, [username])
 
     if len(result) == 1:
-        user_id, correct_password_hash, salt = result[0]
+        user_id, correct_password_hash = result[0]
         sha1 = hashlib.sha1()
         sha1.update(password.encode())
         password_hash = sha1.hexdigest() 
