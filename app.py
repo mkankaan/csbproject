@@ -10,11 +10,13 @@ import sqlite3
 import secrets
 import logging
 import hashlib
+import hmac # FLAW 4 FIX
 
 import users
 import rooms
 import messages
 import members
+from scrypt_params import * # FLAW 4 FIX
 
 #logging.basicConfig(filename='record.log', level=logging.DEBUG) # FLAW 5 FIX
 app = Flask(__name__)
@@ -292,7 +294,9 @@ def change_password():
         new_password2 = request.form["new_password2"]
         old_password = request.form["old_password"]
 
-        errors = validate_new_password(new_password1, new_password2, old_password, user["password_hash"])
+        # errors = validate_new_password(new_password1, new_password2, old_password, user["password_hash"])
+        # FLAW 4 FIX:
+        errors = validate_new_password(new_password1, new_password2, old_password, user["password_hash"], user["salt"])
 
         if errors == []:
             users.change_password(user_id, new_password1)
@@ -305,7 +309,8 @@ def change_password():
         return render_template("edit_profile.html", user=user, username_error="")
 
 
-def validate_new_password(new_password1, new_password2, old_password, old_password_hash):
+# bad code
+def _validate_new_password(new_password1, new_password2, old_password, old_password_hash):
     if new_password1 != new_password2:
         return ["Passwords don't match"]
 
@@ -321,6 +326,24 @@ def validate_new_password(new_password1, new_password2, old_password, old_passwo
     new_password_hash = sha1.hexdigest()
             
     if new_password_hash == old_password_hash:
+        return ["New password can't be the same as old password"]
+
+    return []
+
+
+# FLAW 4 FIX
+def validate_new_password(new_password1, new_password2, old_password, old_password_hash, salt):
+    if new_password1 != new_password2:
+        return ["Passwords don't match"]
+
+    old_password_input_hash = hashlib.scrypt(old_password.encode(), salt=salt, n=N, r=R, p=P, maxmem=MAXMEM)
+
+    if not hmac.compare_digest(old_password_input_hash, old_password_hash):
+        return ["Old password is incorrect"]
+
+    new_password_hash = hashlib.scrypt(new_password1.encode(), salt=salt, n=N, r=R, p=P, maxmem=MAXMEM)
+            
+    if hmac.compare_digest(new_password_hash, old_password_hash):
         return ["New password can't be the same as old password"]
 
     return []

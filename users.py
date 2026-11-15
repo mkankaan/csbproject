@@ -92,8 +92,8 @@ def change_username(user_id, new_username):
     db.execute(sql, [new_username, user_id])
     """
 
-
-def change_password(user_id, new_password):
+# bad code
+def _change_password(user_id, new_password):
     sha1 = hashlib.sha1()
     sha1.update(new_password.encode())
     new_password_hash = sha1.hexdigest()
@@ -106,6 +106,15 @@ def change_password(user_id, new_password):
     sql = "UPDATE users SET password = ? WHERE id = ?"
     db.execute(sql, [new_password, user_id])
     """
+
+
+# FLAW 4 FIX
+def change_password(user_id, new_password):
+    salt = get_user(user_id)["salt"]
+    new_password_hash = hashlib.scrypt(new_password.encode(), salt=salt, n=N, r=R, p=P, maxmem=MAXMEM)
+    sql = "UPDATE users SET password_hash = ? WHERE id = ?"
+    db.execute(sql, [new_password_hash, user_id])
+
 
 # fix
 def search_user(search_word, room_id):
