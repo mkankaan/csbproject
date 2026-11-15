@@ -7,9 +7,9 @@ from flask import abort
 from flask import flash
 
 import sqlite3
-import secrets
-import logging
 import hashlib
+import secrets # FLAW 3 FIX
+import logging # FLAW 5 FIX
 import hmac # FLAW 4 FIX
 
 import users
@@ -68,7 +68,7 @@ def login():
             # session["csrf_token"] = secrets.token_hex(16)
             return redirect("/")
         else:
-            flash("Incorrect username or password")
+            flash("Wrong username or password")
             return render_template("login.html")
 
 
@@ -170,11 +170,8 @@ def chat_room(room_id):
 def search_user():
     username = request.form["username"]
     room_id = request.form["room_id"]
-    print("searching")
-    print(dict(request.form))
     results = users.search_user(username, room_id)
     session["user_search_results"] = [user["username"] for user in results]
-    #print(session["user_search_results"])
     return redirect("/room/" + str(room_id))
 
 @app.route("/new_message", methods=["POST"])
@@ -246,7 +243,7 @@ def edit_profile(user_id):
         if not user:
             abort(404)
 
-        return render_template("edit_profile.html", user=user, username_error="", password_error="")
+        return render_template("edit_profile.html", user=user, username_error="")
 
 
 @app.route("/change_username", methods=["POST"])
@@ -294,13 +291,12 @@ def change_password():
         new_password2 = request.form["new_password2"]
         old_password = request.form["old_password"]
 
-        # errors = validate_new_password(new_password1, new_password2, old_password, user["password_hash"])
+        errors = validate_new_password(new_password1, new_password2, old_password, user["password_hash"])
         # FLAW 4 FIX:
-        errors = validate_new_password(new_password1, new_password2, old_password, user["password_hash"], user["salt"])
+        # errors = validate_new_password(new_password1, new_password2, old_password, user["password_hash"], user["salt"])
 
         if errors == []:
             users.change_password(user_id, new_password1)
-            print("password changed")
             flash("Password changed")
         else:
             for error in errors:
@@ -309,8 +305,7 @@ def change_password():
         return render_template("edit_profile.html", user=user, username_error="")
 
 
-# bad code
-def _validate_new_password(new_password1, new_password2, old_password, old_password_hash):
+def validate_new_password(new_password1, new_password2, old_password, old_password_hash):
     if new_password1 != new_password2:
         return ["Passwords don't match"]
 
@@ -331,7 +326,8 @@ def _validate_new_password(new_password1, new_password2, old_password, old_passw
     return []
 
 
-# FLAW 4 FIX
+"""
+FLAW 4 FIX:
 def validate_new_password(new_password1, new_password2, old_password, old_password_hash, salt):
     if new_password1 != new_password2:
         return ["Passwords don't match"]
@@ -347,6 +343,7 @@ def validate_new_password(new_password1, new_password2, old_password, old_passwo
         return ["New password can't be the same as old password"]
 
     return []
+"""
 
 
 @app.route("/delete_room/<int:room_id>", methods=["POST"])
