@@ -39,6 +39,7 @@
                         type="text"
                         id="username"
                         name="username"
+                        class="user-search-field"
                     />
                     <input
                     type="hidden"
@@ -67,13 +68,11 @@
                         <input type="submit" value="Add member" />
                     </form>
                     {% else %}
+                    <div class="no-results">
                         <input class="btn-disabled" type="submit" value="Add member" disabled />
+                        <div class="error">{{ error }}</div>
+                    </div>
                     {% endif %}
-                </div>
-                <div class="error">
-                    {% for message in get_flashed_messages() %}
-                        {{ message }}
-                    {% endfor %}
                 </div>
             </div>
             {% endif %}

@@ -152,10 +152,13 @@ def chat_room(room_id):
     room_messages = messages.get_messages_by_room(room_id)
     room_members = members.get_by_room(room_id)
     user_search_results = []
+    error = ""
 
     if "user_search_results" in session:
         user_search_results = session["user_search_results"]
+        error = session["search_results_error"]
         del session["user_search_results"]
+        del session["search_results_error"]
 
     """
     FLAW 1 FIX:
@@ -163,7 +166,7 @@ def chat_room(room_id):
         abort(403)
     """
 
-    return render_template("room.html", room=room, messages=room_messages, members=room_members, user_search_results=user_search_results)
+    return render_template("room.html", room=room, messages=room_messages, members=room_members, user_search_results=user_search_results, error=error)
 
 
 @app.route("/search_user", methods=["POST"])
@@ -172,7 +175,9 @@ def search_user():
     room_id = request.form["room_id"]
     results = users.search_user(username, room_id)
     session["user_search_results"] = [user["username"] for user in results]
+    session["search_results_error"] = "No results" if results == [] else ""
     return redirect("/room/" + str(room_id))
+
 
 @app.route("/new_message", methods=["POST"])
 def new_message():
