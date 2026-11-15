@@ -36,7 +36,7 @@ def index():
 @app.route("/register", methods=["GET", "POST"])
 def register():
     if request.method == "GET":
-        return render_template("register.html")
+        return render_template("register.html", filled={})
 
     if request.method == "POST":
         username = request.form["username"]
@@ -53,13 +53,13 @@ def register():
         # errors += strong_password(password, username)
 
         if errors:
-            return render_template("register.html", errors=errors)       
+            return render_template("register.html", errors=errors, filled={"username": username})       
 
         try:
             users.create_user(username, password)
             return redirect("/")
         except sqlite3.IntegrityError:
-            return render_template("register.html", errors=["Username already taken"])       
+            return render_template("register.html", errors=["Username already taken"], filled={"username": username})       
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -371,8 +371,8 @@ def validate_new_password(new_password1, new_password2, old_password, old_passwo
     return []
 """
 
-"""
-FLAW 6 FIX:
+#"""
+#FLAW 6 FIX:
 def strong_password(password, username):
     errors = []
     password_stripped = password.replace(' ', '')
@@ -395,8 +395,13 @@ def strong_password(password, username):
     if password == username:
         errors.append("Username and password must be different")
 
+    weak_passwords = [p.strip() for p in open("weakpasswords.txt")]
+
+    if password in weak_passwords:
+        errors.append("Password is too weak")
+
     return errors
-"""
+#"""
 
 
 @app.route("/delete_room/<int:room_id>", methods=["POST"])
