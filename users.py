@@ -31,7 +31,7 @@ def create_user(username, password):
 
 
 def get_user(user_id):
-    sql = "SELECT id, username, password_hash FROM users WHERE id = ?"
+    sql = "SELECT id, username, password_hash, salt FROM users WHERE id = ?"
     result = db.query(sql, [user_id])
     return result[0] if result else None
 
@@ -107,7 +107,7 @@ def change_password(user_id, new_password):
     db.execute(sql, [new_password, user_id])
     """
 
-
+# fix
 def search_user(search_word, room_id):
     sql = f"""SELECT users.username
         FROM users
