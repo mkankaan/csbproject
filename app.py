@@ -40,6 +40,14 @@ def register():
     if request.method == "POST":
         username = request.form["username"]
         password = request.form["password"]
+   
+        if len(username.replace(' ', '')) != len(username):
+            flash("Username can't contain spaces")
+            return render_template("register.html")
+
+        if len(password.replace(' ', '')) != len(password):
+            flash("Password can't contain spaces")
+            return render_template("register.html")
 
         # check username + password valid  , limit pw length    
        
@@ -200,7 +208,7 @@ def new_message():
 @app.route("/add_member", methods=["POST"])
 def add_member():
     if request.method == "POST":        
-        print(dict(request.form)) # for screenshots
+        print("Add member:", dict(request.form)) # for screenshots
 
         """
         FLAW 3 FIX:
@@ -268,13 +276,17 @@ def change_username():
         user = users.get_user(user_id)
         new_username = request.form["new_username"]
 
-    try:
-        users.change_username(user_id, new_username)
-        user = users.get_user(user_id)
-        session["username"] = new_username
-        return render_template("edit_profile.html", user=user, username_error="Username changed")
-    except sqlite3.IntegrityError:
-        return render_template("edit_profile.html", user=user, username_error="Username already taken")
+        if len(new_username.replace(' ', '')) != len(new_username):
+            print("spaces")
+            return render_template("edit_profile.html", user=user, username_error="Username can't contain spaces")
+
+        try:
+            users.change_username(user_id, new_username)
+            user = users.get_user(user_id)
+            session["username"] = new_username
+            return render_template("edit_profile.html", user=user, username_error="Username changed")
+        except sqlite3.IntegrityError:
+            return render_template("edit_profile.html", user=user, username_error="Username already taken")
 
 
 @app.route("/change_password", methods=["POST"])
@@ -314,6 +326,9 @@ def validate_new_password(new_password1, new_password2, old_password, old_passwo
     if new_password1 != new_password2:
         return ["Passwords don't match"]
 
+    if len(new_password1.replace(' ', '')) != len(new_password1):
+        return ["Password can't contain spaces"]
+
     sha1 = hashlib.sha1()
     sha1.update(old_password.encode())
     old_password_input_hash = sha1.hexdigest()
@@ -336,6 +351,9 @@ FLAW 4 FIX:
 def validate_new_password(new_password1, new_password2, old_password, old_password_hash, salt):
     if new_password1 != new_password2:
         return ["Passwords don't match"]
+
+    if len(new_password1.replace(' ', '')) != len(new_password1):
+        return ["Password can't contain spaces"]
 
     old_password_input_hash = hashlib.scrypt(old_password.encode(), salt=salt, n=N, r=R, p=P, maxmem=MAXMEM)
 
