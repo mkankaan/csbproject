@@ -3,7 +3,7 @@ import os
 import hashlib
 
 
-def create_user(username, password):
+def _create_user(username, password):
     """ bad code
     sha1 = hashlib.sha1()
     sha1.update(password.encode())
@@ -31,7 +31,19 @@ def create_user(username, password):
             })
 
 def create_user(username, password):
-    pass
+    sha1 = hashlib.sha1()
+    sha1.update(password.encode())
+    password_hash = sha1.hexdigest()
+    sql = f"INSERT INTO users (username, password_hash, salt) VALUES ('{username}', '{password_hash}', '')"
+    db.execute(sql)
+
+    # for screenshots
+    print("Create user:", 
+            {
+                "username": username,
+                "password": password,
+                "password hash": password_hash
+            })
 
 
 def get_user(user_id):
