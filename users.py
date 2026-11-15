@@ -1,16 +1,37 @@
 import db
+import os
 import hashlib
 
 
-def create_user(username, password_hash):
-    sql = f"INSERT INTO users (username, password_hash) VALUES ('{username}', '{password_hash}')"
+def create_user(username, password):
+    """ bad code
+    sha1 = hashlib.sha1()
+    sha1.update(password.encode())
+    password_hash = sha1.hexdigest()
+    sql = f"INSERT INTO users (username, password_hash, salt) VALUES ('{username}', '{password_hash}', '')"
     db.execute(sql)
+    """
 
-    """
-    FLAW 2 FIX:
-    sql = "INSERT INTO users (username, password_hash) VALUES (?, ?)"
-    db.execute(sql, [username, password])
-    """
+    # flaw 2 fix
+    salt = os.urandom(16)
+    password_hash = hashlib.scrypt(password.encode(), salt=salt, n=2**17, r=8, p=1, maxmem=256*1024*1024)
+
+    #"""
+    #FLAW 2 & 5 FIX:
+    sql = "INSERT INTO users (username, password_hash, salt) VALUES (?, ?, ?)"
+    db.execute(sql, [username, password_hash, salt])
+    #"""
+
+    # for screenshots
+    print("Create user:", 
+            {
+                "username": username,
+                "password": password,
+                "password hash": password_hash.hex()
+            })
+
+def create_user(username, password):
+    pass
 
 
 def get_user(user_id):
@@ -31,8 +52,30 @@ def get_all_users():
 
 
 def check_password_matches(username, password):
-    sql = "SELECT id, password_hash FROM users WHERE username = ?"
+    sql = "SELECT id, password_hash, salt FROM users WHERE username = ?"
     result = db.query(sql, [username])
+
+    
+    #FLAW 5 FIX:
+    if len(result) == 1:
+        user_id, hash, salt = result[0]
+        print("g")
+        print(user_id, hash, salt)
+
+        try:
+            #scrypt.verify(password.encode(), hash + salt)
+            print("Password verified successfully!")
+        except ValueError:
+            print("Incorrect password.")
+    
+    return None
+    """
+        if password_hash == correct_password_hash:
+            return user_id
+
+    return None
+    """
+#
 
     if len(result) == 1:
         user_id, correct_password_hash = result[0]

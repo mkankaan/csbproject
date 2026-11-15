@@ -59,8 +59,8 @@
                     {% if user_search_results %}
                     <form action="/add_member" method="post">
                         <select class="user-select" name="username" id="username">
-                            {% for user in user_search_results %}
-                            <option value="{{ user.username }}">{{ user.username }}</option>
+                            {% for username in user_search_results %}
+                            <option value="{{ username }}">{{ username }}</option>
                             {% endfor %}
                         </select>
                         <input type="hidden" name="room_id" value="{{ room.id }}" />

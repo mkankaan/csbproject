@@ -5,12 +5,10 @@ from flask import request
 from flask import redirect
 from flask import abort
 from flask import flash
-from flask import url_for
 
 import sqlite3
 import secrets
 import logging
-import hashlib
 
 import users
 import rooms
@@ -40,20 +38,10 @@ def register():
         username = request.form["username"]
         password = request.form["password"]
 
-        # check username + password valid
-
-        sha1 = hashlib.sha1()
-        sha1.update(password.encode())
-        password_hash = sha1.hexdigest()       
-
-        # for screenshots
-        print("created user:")
-        print("username:\t", username)
-        print("password:\t", password)
-        print("password hash:\t", password_hash)
+        # check username + password valid  , limit pw length    
        
         try:
-            users.create_user(username, password_hash)
+            users.create_user(username, password)
             return redirect("/")
         except sqlite3.IntegrityError:
             flash("Username already taken")
@@ -160,6 +148,11 @@ def chat_room(room_id):
 
     room_messages = messages.get_messages_by_room(room_id)
     room_members = members.get_by_room(room_id)
+    user_search_results = []
+
+    if "user_search_results" in session:
+        user_search_results = session["user_search_results"]
+        del session["user_search_results"]
 
     """
     FLAW 1 FIX:
@@ -167,7 +160,7 @@ def chat_room(room_id):
         abort(403)
     """
 
-    return render_template("room.html", room=room, messages=room_messages, members=room_members, user_search_results=[])
+    return render_template("room.html", room=room, messages=room_messages, members=room_members, user_search_results=user_search_results)
 
 
 @app.route("/search_user", methods=["POST"])
@@ -177,13 +170,9 @@ def search_user():
     print("searching")
     print(dict(request.form))
     results = users.search_user(username, room_id)
-
-    room = rooms.get_room(room_id)
-    room_messages = messages.get_messages_by_room(room_id)
-    room_members = members.get_by_room(room_id)
-
-    return render_template("room.html", room=room, messages=room_messages, members=room_members, user_search_results=results)
-
+    session["user_search_results"] = [user["username"] for user in results]
+    #print(session["user_search_results"])
+    return redirect("/room/" + str(room_id))
 
 @app.route("/new_message", methods=["POST"])
 def new_message():
