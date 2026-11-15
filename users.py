@@ -10,13 +10,11 @@ def create_user(username, password):
     sha1.update(password.encode())
     password_hash = sha1.hexdigest()
     sql = f"INSERT INTO users (username, password_hash, salt) VALUES ('{username}', '{password_hash}', '')"
-    # db.execute(sql) # kommentti pois
+    #db.execute(sql) # kommentti pois
 
     ### FLAW 4 FIX:
     salt = os.urandom(16)
-    print("salt:", salt) # del
     password_hash = hashlib.scrypt(password.encode(), salt=salt, n=N, r=R, p=P, maxmem=MAXMEM)
-    print("password hash:", password_hash)
     ###
 
     ### FLAWS 2 & 4 FIX:
@@ -25,12 +23,11 @@ def create_user(username, password):
     ###
     
     # for screenshots
-    print("Create user:", 
-            {
-                "username": username,
-                "password": password,
-                "password hash": password_hash
-            })
+    print("Create user:") 
+    print("Username:\t", username)
+    print("Password:\t", password)
+    print("Password hash:\t", password_hash)
+
 
 
 def get_user(user_id):
@@ -74,7 +71,7 @@ def check_password_matches(username, password):
     result = db.query(sql, [username])
 
     # FLAW 4 FIX:
-    
+
     if len(result) == 1:
         user_id, correct_password_hash, salt = result[0]
         password_input_hash = hashlib.scrypt(password.encode(), salt=salt, n=N, r=R, p=P, maxmem=MAXMEM)
