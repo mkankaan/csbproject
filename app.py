@@ -259,7 +259,7 @@ def edit_profile(user_id):
         if not user:
             abort(404)
 
-        return render_template("edit_profile.html", user=user, username_error="")
+        return render_template("edit_profile.html", user=user, username_error="", filled={"username": user["username"]})
 
 
 @app.route("/change_username", methods=["POST"])
@@ -281,15 +281,15 @@ def change_username():
 
         if len(new_username.replace(' ', '')) != len(new_username):
             print("spaces")
-            return render_template("edit_profile.html", user=user, username_error="Username can't contain spaces")
+            return render_template("edit_profile.html", user=user, username_error="Username can't contain spaces", filled={"username": new_username})
 
         try:
             users.change_username(user_id, new_username)
             user = users.get_user(user_id)
             session["username"] = new_username
-            return render_template("edit_profile.html", user=user, username_error="Username changed")
+            return render_template("edit_profile.html", user=user, username_error="Username changed", filled={"username": new_username})
         except sqlite3.IntegrityError:
-            return render_template("edit_profile.html", user=user, username_error="Username already taken")
+            return render_template("edit_profile.html", user=user, username_error="Username already taken", filled={"username": new_username})
 
 
 @app.route("/change_password", methods=["POST"])
@@ -322,7 +322,7 @@ def change_password():
             for error in errors:
                 flash(error)
 
-        return render_template("edit_profile.html", user=user, username_error="")
+        return render_template("edit_profile.html", user=user, username_error="", filled={"username": user["username"]})
 
 
 def validate_new_password(new_password1, new_password2, old_password, old_password_hash):
