@@ -268,10 +268,9 @@ def change_username():
         users.change_username(user_id, new_username)
         user = users.get_user(user_id)
         session["username"] = new_username
-        return render_template("edit_profile.html", user=user, username_error="", password_error="")
-    
+        return render_template("edit_profile.html", user=user, username_error="Username changed")
     except sqlite3.IntegrityError:
-        return render_template("edit_profile.html", user=user, username_error="Username already taken", password_error="")
+        return render_template("edit_profile.html", user=user, username_error="Username already taken")
 
 
 @app.route("/change_password", methods=["POST"])
