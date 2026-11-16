@@ -1,6 +1,8 @@
 # Chat app
 
-This project requires Python, Flask and Sqlite3. This project is a simple chat application. Users can create chat rooms, invite members to chat rooms and send messages. Inviting members and deleting a room can only be done by the owner. Users are not supposed to be able to view eachothers' profiles or access chat rooms that they're not a member of.
+This project requires Python, Flask and Sqlite3.
+
+This project is a simple chat application. Users can create chat rooms, invite members to chat rooms and send messages. Inviting members and deleting a room can only be done by the owner. Users are not supposed to be able to view eachothers' profiles or access chat rooms that they're not a member of.
 
 The project demonstrates 6 security flaws from the OWASP Top 10 list (2021):
 

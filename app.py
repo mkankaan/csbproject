@@ -211,7 +211,7 @@ def new_message():
 @app.route("/add_member", methods=["POST"])
 def add_member():
     if request.method == "POST":        
-        print("Add member:", dict(request.form)) # for screenshots
+        print("Add member", dict(request.form)) # for screenshots
 
         """
         FLAW 3 FIX:
