@@ -193,7 +193,7 @@ def search_user():
 @app.route("/new_message", methods=["POST"])
 def new_message():
     if request.method == "POST":
-        print(dict(request.form)) # for screenshots
+        print("New message", dict(request.form)) # for screenshots
 
         """
         FLAW 3 FIX:
