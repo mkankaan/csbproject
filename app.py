@@ -8,10 +8,10 @@ from flask import flash
 
 import sqlite3
 import hashlib
-import secrets # FLAW 3 FIX
-import logging # FLAW 5 FIX
-import hmac # FLAW 4 FIX
-import re # FLAW 6 FIX
+import secrets  # FLAW 3 FIX
+import logging  # FLAW 5 FIX
+import hmac     # FLAW 4 FIX
+import re       # FLAW 6 FIX
 
 import users
 import rooms
@@ -19,7 +19,14 @@ import messages
 import members
 from security_params import * # FLAW 4 FIX
 
-#logging.basicConfig(filename='record.log', level=logging.DEBUG) # FLAW 5 FIX
+"""
+FLAW 5 FIX:
+logging.basicConfig(filename='record.log',
+                    level=logging.INFO,
+                    format='%(asctime)s %(levelname)s: %(message)s',
+                    datefmt='%Y-%m-%d %I:%M:%S')
+"""
+
 app = Flask(__name__)
 app.secret_key = "1"
 app.config['TEMPLATES_AUTO_RELOAD'] = True
@@ -57,8 +64,12 @@ def register():
 
         try:
             users.create_user(username, password)
+            # FLAW 5 FIX:
+            # app.logger.info("New user %s registered", username)
             return redirect("/")
         except sqlite3.IntegrityError:
+            # FLAW 5 FIX:
+            # app.logger.info("Failed to register new user %s", username)
             return render_template("register.html", errors=["Username already taken"], filled={"username": username})       
 
 
@@ -75,10 +86,16 @@ def login():
         if user_id:
             session["user_id"] = user_id
             session["username"] = username
+
             # FLAW 3 FIX:
             # session["csrf_token"] = secrets.token_hex(16)
+            
+            # FLAW 5 FIX:
+            # app.logger.info("Successful login attempt with user id %i", user_id)
             return redirect("/")
         else:
+            # FLAW 5 FIX:
+            # app.logger.info(f"Failed login attempt {dict(request.form)}")
             flash("Wrong username or password")
             return render_template("login.html")
 
@@ -86,8 +103,12 @@ def login():
 @app.route("/logout")
 def logout():
     if "user_id" in session:
+        # FLAW 5 FIX:
+        # app.logger.info("User id %s logged out", session["user_id"])
+
         del session["user_id"]
         del session["username"]
+        
         # FLAW 3 FIX:
         # del session["csrf_token"]
     return redirect("/")
@@ -144,6 +165,9 @@ def new_room():
         room_name = request.form["room_name"]
         user_id = session["user_id"]
         rooms.create_room(room_name, user_id)
+
+        # FLAW 5 FIX:
+        # app.logger.info("User id %s created new room %s", user_id, room_name)
         return redirect("/user/" + str(session["user_id"]))
 
 
@@ -182,12 +206,20 @@ def chat_room(room_id):
 
 @app.route("/search_user", methods=["POST"])
 def search_user():
-    username = request.form["username"]
-    room_id = request.form["room_id"]
-    results = users.search_user(username, room_id)
-    session["user_search_results"] = [user["username"] for user in results]
-    session["search_results_error"] = "No results" if results == [] else ""
-    return redirect("/room/" + str(room_id))
+    if request.method == "POST":
+
+        """
+        FLAW 3 FIX:
+        if "csrf_token" not in request.form or request.form["csrf_token"] != session["csrf_token"]:
+            abort(403)
+        """
+        
+        username = request.form["username"]
+        room_id = request.form["room_id"]
+        results = users.search_user(username, room_id)
+        session["user_search_results"] = [user["username"] for user in results]
+        session["search_results_error"] = "No results" if results == [] else ""
+        return redirect("/room/" + str(room_id))
 
 
 @app.route("/new_message", methods=["POST"])
@@ -205,6 +237,9 @@ def new_message():
         content = request.form["content"]
         user_id = request.form["user_id"]
         messages.create_message(user_id, room_id, content)
+
+        # FLAW 5 FIX:
+        # app.logger.info("New message from user id %s to room id %s", user_id, room_id)
         return redirect("/room/" + str(room_id))
 
 
@@ -220,8 +255,20 @@ def add_member():
         """
         
         room_id = request.form["room_id"]
+        room = rooms.get_room(room_id)
         user = users.get_by_username(request.form.get("username"))
-        members.add_member(user["id"], room_id)
+        new_member_id = user["id"]
+
+        """
+        FLAW 1 FIX:
+        if "user_id" not in session or session["user_id"] != room["owner"]:
+            abort(403)
+        """
+    
+        members.add_member(new_member_id, room_id)
+
+        # FLAW 5 FIX:
+        # app.logger.info("User %s added user %s to room %s", session["user_id"], new_member_id, room_id)
         return redirect("/room/" + str(room_id))
 
 
@@ -237,6 +284,9 @@ def leave_room():
         room_id = request.form["room_id"]
         user_id = session["user_id"]
         members.remove_member(user_id, room_id)
+
+        # FLAW 5 FIX:
+        # app.logger.info("User %s remoced from room %s", user_id, room_id)
         return redirect("/user/" + str(user_id))
 
 
@@ -280,15 +330,19 @@ def change_username():
         new_username = request.form["new_username"]
 
         if len(new_username.replace(' ', '')) != len(new_username):
-            print("spaces")
             return render_template("edit_profile.html", user=user, username_error="Username can't contain spaces", filled={"username": new_username})
 
         try:
             users.change_username(user_id, new_username)
             user = users.get_user(user_id)
             session["username"] = new_username
+
+            # FLAW 5 FIX:
+            # app.logger.info("Changed username of user %s", user_id)
             return render_template("edit_profile.html", user=user, username_error="Username changed", filled={"username": new_username})
         except sqlite3.IntegrityError:
+            # FLAW 5 FIX:
+            # app.logger.info("Failed to change username of user %s", user_id)
             return render_template("edit_profile.html", user=user, username_error="Username already taken", filled={"username": new_username})
 
 
@@ -318,7 +372,12 @@ def change_password():
         if errors == []:
             users.change_password(user_id, new_password1)
             flash("Password changed")
+            # FLAW 5 FIX:
+            # app.logger.info("Changed password of user %s", user_id)
         else:
+            # FLAW 5 FIX:
+            # app.logger.info("Failed to change password of user %s", user_id)
+
             for error in errors:
                 flash(error)
 
@@ -377,7 +436,7 @@ def strong_password(password, username):
     errors = []
     password_stripped = password.replace(' ', '')
 
-    if not re.search('\d', password):
+    if not re.search('.*[0-9].*', password):
         errors.append("Password should contain at least one number")
 
     if not re.search('.*[a-z].*', password):
@@ -415,5 +474,17 @@ def delete_room(room_id):
 
         room_id = request.form["room_id"]
         user_id = session["user_id"]
+
+        """
+        FLAW 1 FIX:
+        room = rooms.get_room(room_id)
+
+        if "user_id" not in session or room["owner"] != user_id:
+            abort(403)
+        """
+
         rooms.delete_room(room_id)
+        
+        # FLAW 5 FIX:
+        # app.logger.info("User id %s deleted room id %s", user_id, room_id)
         return redirect("/user/" + str(user_id))

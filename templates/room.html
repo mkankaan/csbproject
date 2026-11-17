@@ -51,6 +51,7 @@
                     name="user_id"
                     value="{{ session.user_id }}"
                     />
+                    <!-- <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" /> -->  <!-- FLAW 3 FIX -->
                     <input type="submit" value="Search" />
                     </div>
                 </form>
