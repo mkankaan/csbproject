@@ -95,7 +95,7 @@ form.vertical-form {
     padding: 1rem;
     flex-grow: 1;
     overflow: scroll;
-    height: 60vh;
+    height: 55vh;
 }
 
 .message {
@@ -157,7 +157,7 @@ footer input[type="text"] {
     justify-content: space-between;
 }
 
-button, input[type="submit"] {
+button, input[type="submit"], input[type="text"] {
     padding: .1rem .25rem;
 }
 
@@ -181,4 +181,47 @@ button, input[type="submit"] {
     font-weight: bold;
     font-size: 1.25rem;
     color: #000000;
+}
+
+.profile-info {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 2rem;
+}
+
+.profile-info > span {
+    display: inline-block;
+}
+
+.profile-info > label {
+    font-weight: bold;
+}
+
+.add-member-form {
+    min-height: 3rem;
+    display: grid;
+    grid-template-columns: auto;
+    gap: .5rem;
+    justify-content: right;
+}
+
+.user-select {
+    display: flex;
+    flex-direction: row-reverse;
+}
+
+select {
+    padding: 0 .5rem;
+}
+
+.btn-disabled {
+    max-width: fit-content;
+}
+
+.no-results {
+    display: flex;
+    flex-direction: row-reverse;
+    gap: 6rem;
+    width: 100%;
+    align-items: center;
 }
